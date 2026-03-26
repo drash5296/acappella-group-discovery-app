@@ -54,7 +54,7 @@ Return ONLY this JSON (no markdown, no explanation):
 
   try {
     const result = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: { systemInstruction: SYSTEM_INSTRUCTION }
     });
@@ -114,7 +114,7 @@ Recommend exactly 4 groups and 4 songs. Prioritize specificity and genuine fit o
 
   try {
     const result = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: { systemInstruction: SYSTEM_INSTRUCTION }
     });
