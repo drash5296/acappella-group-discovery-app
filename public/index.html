@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>アカペラグループ発掘アプリ</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0d0d1a;
+  --surface:   #151528;
+  --card:      #1c1c36;
+  --border:    #2e2e52;
+  --accent:    #7c5cfc;
+  --accent2:   #c084fc;
+  --text:      #e8e6f0;
+  --muted:     #8884a0;
+  --success:   #4ade80;
+  --radius:    16px;
+  --shadow:    0 8px 32px rgba(0,0,0,.5);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 80px;
+}
+
+/* ── Header ───────────────────────────────────────── */
+header {
+  width: 100%;
+  max-width: 680px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.logo {
+  font-size: 13px;
+  letter-spacing: .15em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+h1 {
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.3;
+}
+
+/* ── Progress bar ─────────────────────────────────── */
+.progress-wrap {
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 32px;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.progress-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 99px;
+  transition: width .5s ease;
+}
+
+/* ── Main card ────────────────────────────────────── */
+.card {
+  width: 100%;
+  max-width: 680px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  box-shadow: var(--shadow);
+}
+
+/* ── Welcome screen ───────────────────────────────── */
+#welcome {
+  text-align: center;
+}
+.music-icon {
+  font-size: 56px;
+  margin-bottom: 24px;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+#welcome h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+#welcome p {
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+.badge {
+  background: rgba(124,92,252,.15);
+  border: 1px solid rgba(124,92,252,.3);
+  color: var(--accent2);
+  border-radius: 99px;
+  font-size: 12px;
+  padding: 4px 12px;
+}
+
+/* ── Button ───────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  border-radius: 99px;
+  padding: 14px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+}
+.btn:hover  { opacity: .9; }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* ── Question screen ──────────────────────────────── */
+#question { display: none; }
+.q-number {
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: .1em;
+  margin-bottom: 16px;
+}
+.q-text {
+  font-size: clamp(17px, 3vw, 21px);
+  font-weight: 600;
+  line-height: 1.55;
+  margin-bottom: 40px;
+}
+
+/* Slider */
+.slider-wrap {
+  margin-bottom: 32px;
+}
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.slider-score {
+  text-align: center;
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 12px;
+  transition: color .2s;
+}
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: var(--border);
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 2px 8px rgba(124,92,252,.5);
+  cursor: pointer;
+  transition: transform .15s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+.pip-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 2px 0;
+}
+.pip {
+  width: 2px;
+  height: 8px;
+  background: var(--border);
+  border-radius: 1px;
+  transition: background .2s;
+}
+.pip.active { background: var(--accent); }
+
+.q-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Loading ──────────────────────────────────────── */
+#loading { display: none; text-align: center; }
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+  margin: 0 auto 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading p { color: var(--muted); line-height: 1.8; font-size: 14px; }
+
+/* ── Results ──────────────────────────────────────── */
+#results { display: none; }
+.results-summary {
+  background: rgba(124,92,252,.12);
+  border: 1px solid rgba(124,92,252,.25);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin-bottom: 32px;
+  line-height: 1.7;
+  font-size: 15px;
+}
+.section-label {
+  font-size: 11px;
+  letter-spacing: .15em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.group-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.group-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  transition: border-color .2s;
+}
+.group-card:hover { border-color: var(--accent); }
+.group-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.group-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+.group-origin {
+  font-size: 12px;
+  color: var(--muted);
+}
+.group-style {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.tag {
+  background: rgba(192,132,252,.12);
+  color: var(--accent2);
+  border-radius: 99px;
+  font-size: 11px;
+  padding: 3px 10px;
+}
+.group-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.starter-song {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+  background: rgba(255,255,255,.04);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.starter-song span:first-child { color: var(--accent2); font-size: 16px; }
+.match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.match-item {
+  font-size: 12px;
+  color: var(--success);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.match-item::before { content: '✓'; flex-shrink: 0; }
+
+/* Songs */
+.song-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.song-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.song-num {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.song-title { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+.song-group { font-size: 12px; color: var(--accent2); margin-bottom: 6px; }
+.song-why   { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+.restart-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 99px;
+  padding: 10px 24px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--text); }
+
+/* ── Fade-in ──────────────────────────────────────── */
+.fade-in {
+  animation: fadeIn .4s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Error toast ──────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3b1f1f;
+  border: 1px solid #7a3030;
+  color: #ffaaaa;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: none;
+  z-index: 100;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎵 A Cappella Discovery</div>
+  <h1>アカペラグループ<br>発掘アプリ</h1>
+</header>
+
+<!-- Progress (hidden until quiz starts) -->
+<div class="progress-wrap" id="progressWrap" style="display:none">
+  <div class="progress-label">
+    <span id="progressText">質問 1 / 10</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="card">
+
+  <!-- ── Welcome ── -->
+  <section id="welcome">
+    <span class="music-icon">🎤</span>
+    <h2>あなたにぴったりの<br>アカペラグループを見つけよう</h2>
+    <p>
+      10問の質問に1〜10のスコアで答えるだけ。<br>
+      AIがあなたの好みを分析して、国内外のアカペラグループと<br>
+      おすすめ曲を発掘します。
+    </p>
+    <div class="badge-row">
+      <span class="badge">🇯🇵 国内グループ対応</span>
+      <span class="badge">🌍 海外グループ対応</span>
+      <span class="badge">🤖 AI動的推薦</span>
+      <span class="badge">🎯 10問診断</span>
+    </div>
+    <button class="btn" id="startBtn">診断スタート →</button>
+  </section>
+
+  <!-- ── Question ── -->
+  <section id="question">
+    <div class="q-number" id="qNumber">質問 1 / 10</div>
+    <div class="q-text" id="qText"></div>
+
+    <div class="slider-wrap">
+      <div class="slider-score" id="sliderScore">5</div>
+      <div class="slider-labels">
+        <span id="label1">—</span>
+        <span id="label10">—</span>
+      </div>
+      <input type="range" id="slider" min="1" max="10" value="5" step="1">
+      <div class="pip-row" id="pipRow">
+        <!-- 10 pips injected by JS -->
+      </div>
+    </div>
+
+    <div class="q-actions">
+      <button class="btn" id="nextBtn">次へ →</button>
+    </div>
+  </section>
+
+  <!-- ── Loading ── -->
+  <section id="loading">
+    <div class="spinner"></div>
+    <p id="loadingMsg">AIが次の質問を考えています…</p>
+  </section>
+
+  <!-- ── Results ── -->
+  <section id="results">
+    <div class="results-summary" id="resultsSummary"></div>
+
+    <div class="section-label">🎤 おすすめアカペラグループ</div>
+    <div class="group-grid" id="groupGrid"></div>
+
+    <div class="section-label">🎵 まず聴くべき曲</div>
+    <div class="song-list" id="songList"></div>
+
+    <div class="restart-wrap">
+      <button class="btn-outline" id="restartBtn">もう一度診断する</button>
+    </div>
+  </section>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────
+const state = {
+  screen: 'welcome',   // welcome | question | loading | results
+  questionNumber: 0,
+  history: [],         // [{question, label1, label10, answer}]
+  currentQuestion: null
+};
+
+// ── DOM refs ──────────────────────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const screens = {
+  welcome:  $('welcome'),
+  question: $('question'),
+  loading:  $('loading'),
+  results:  $('results')
+};
+
+function showScreen(name) {
+  Object.entries(screens).forEach(([k, el]) => {
+    el.style.display = k === name ? 'block' : 'none';
+  });
+  if (name !== 'welcome') {
+    el => el?.classList.add('fade-in');
+  }
+  screens[name].classList.add('fade-in');
+}
+
+// ── Progress ───────────────────────────────────────────────────────────────
+function updateProgress(n) {
+  $('progressWrap').style.display = 'block';
+  const pct = Math.round((n / 10) * 100);
+  $('progressFill').style.width = pct + '%';
+  $('progressText').textContent = `質問 ${Math.min(n, 10)} / 10`;
+  $('progressPct').textContent = pct + '%';
+}
+
+// ── Pips ──────────────────────────────────────────────────────────────────
+function buildPips() {
+  const row = $('pipRow');
+  row.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const d = document.createElement('div');
+    d.className = 'pip';
+    d.dataset.val = i;
+    row.appendChild(d);
+  }
+}
+
+function updatePips(val) {
+  document.querySelectorAll('.pip').forEach(p => {
+    p.classList.toggle('active', parseInt(p.dataset.val) <= val);
+  });
+}
+
+// ── Slider ────────────────────────────────────────────────────────────────
+$('slider').addEventListener('input', e => {
+  const v = parseInt(e.target.value);
+  $('sliderScore').textContent = v;
+  updatePips(v);
+  const hue = 220 + (v - 1) * 12; // blue → purple → pink
+  $('sliderScore').style.color = `hsl(${hue},80%,70%)`;
+});
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 4000);
+}
+
+// ── API helpers ───────────────────────────────────────────────────────────
+async function fetchQuestion(questionNumber, history) {
+  const res = await fetch('/api/next-question', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ questionNumber, history })
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'エラーが発生しました');
+  return res.json();
+}
+
+async function fetchRecommendations(history) {
+  const res = await fetch('/api/recommend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ history })
+  });
+  if (!res.ok) throw new Error((await res.json()).error || 'エラーが発生しました');
+  return res.json();
+}
+
+// ── Show question ──────────────────────────────────────────────────────────
+function displayQuestion(data, n) {
+  state.currentQuestion = data;
+  $('qNumber').textContent = `質問 ${n} / 10`;
+  $('qText').textContent = data.question;
+  $('label1').textContent = `1: ${data.label1}`;
+  $('label10').textContent = `10: ${data.label10}`;
+  $('slider').value = 5;
+  $('sliderScore').textContent = '5';
+  $('sliderScore').style.color = '';
+  buildPips();
+  updatePips(5);
+  showScreen('question');
+  updateProgress(n);
+}
+
+// ── Show results ───────────────────────────────────────────────────────────
+function displayResults(data) {
+  $('resultsSummary').textContent = data.summary;
+
+  const gg = $('groupGrid');
+  gg.innerHTML = '';
+  (data.groups || []).forEach(g => {
+    const tags = (g.style || '').split('、').filter(Boolean).map(t =>
+      `<span class="tag">${t.trim()}</span>`
+    ).join('');
+    const matchItems = (g.match_points || []).map(m =>
+      `<div class="match-item">${m}</div>`
+    ).join('');
+    gg.innerHTML += `
+      <div class="group-card fade-in">
+        <div class="group-header">
+          <span class="group-name">${g.name}</span>
+          <span class="group-origin">${g.origin}</span>
+        </div>
+        <div class="group-style">${tags}</div>
+        <div class="group-desc">${g.description}</div>
+        <div class="starter-song">
+          <span>🎵</span>
+          <div><strong>まず聴くべき曲：</strong>${g.starter_song}</div>
+        </div>
+        <div class="match-list">${matchItems}</div>
+      </div>`;
+  });
+
+  const sl = $('songList');
+  sl.innerHTML = '';
+  (data.songs || []).forEach((s, i) => {
+    sl.innerHTML += `
+      <div class="song-card fade-in">
+        <div class="song-num">${i + 1}</div>
+        <div>
+          <div class="song-title">「${s.title}」</div>
+          <div class="song-group">${s.group}</div>
+          <div class="song-why">${s.why}</div>
+        </div>
+      </div>`;
+  });
+
+  showScreen('results');
+  $('progressWrap').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Flow ───────────────────────────────────────────────────────────────────
+$('startBtn').addEventListener('click', async () => {
+  state.history = [];
+  state.questionNumber = 1;
+  showScreen('loading');
+  $('progressWrap').style.display = 'block';
+  $('loadingMsg').textContent = 'AIが最初の質問を考えています…';
+  try {
+    const q = await fetchQuestion(1, []);
+    displayQuestion(q, 1);
+  } catch (err) {
+    showScreen('welcome');
+    $('progressWrap').style.display = 'none';
+    showToast('⚠ ' + err.message);
+  }
+});
+
+$('nextBtn').addEventListener('click', async () => {
+  const answer = parseInt($('slider').value);
+  const q = state.currentQuestion;
+
+  // Save answer
+  state.history.push({
+    question: q.question,
+    label1: q.label1,
+    label10: q.label10,
+    answer
+  });
+
+  const next = state.questionNumber + 1;
+  state.questionNumber = next;
+
+  if (next > 10) {
+    // All done — get recommendations
+    showScreen('loading');
+    $('loadingMsg').textContent = 'AIがあなたの好みを分析中…\nしばらくお待ちください（30秒ほどかかる場合があります）';
+    updateProgress(10);
+    try {
+      const rec = await fetchRecommendations(state.history);
+      displayResults(rec);
+    } catch (err) {
+      showScreen('question');
+      showToast('⚠ ' + err.message);
+    }
+  } else {
+    // Next question
+    showScreen('loading');
+    $('loadingMsg').textContent = `AIが質問 ${next} を考えています…`;
+    updateProgress(next);
+    try {
+      const nextQ = await fetchQuestion(next, state.history);
+      displayQuestion(nextQ, next);
+    } catch (err) {
+      state.questionNumber--;
+      state.history.pop();
+      displayQuestion(q, state.questionNumber);
+      showToast('⚠ ' + err.message);
+    }
+  }
+});
+
+$('restartBtn').addEventListener('click', () => {
+  state.history = [];
+  state.questionNumber = 0;
+  state.currentQuestion = null;
+  $('progressWrap').style.display = 'none';
+  showScreen('welcome');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────
+showScreen('welcome');
+</script>
+</body>
+</html>
