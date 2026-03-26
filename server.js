@@ -9,6 +9,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+// モデル優先順位: 3.1 Flash Lite (500RPD) → 2.5 Flash (20RPD) フォールバック
+const MODELS = ['gemini-3.1-flash-lite-preview', 'gemini-2.5-flash'];
+
+async function generateWithFallback(params) {
+  for (const model of MODELS) {
+    try {
+      const result = await ai.models.generateContent({ ...params, model });
+      console.log(`✓ Used model: ${model}`);
+      return result;
+    } catch (err) {
+      const status = err.message?.match(/status: (\d+)/)?.[1];
+      if (status === '503' || status === '429') {
+        console.warn(`⚠ ${model} unavailable (${status}), trying next...`);
+        continue;
+      }
+      throw err; // 503/429以外のエラーはそのまま投げる
+    }
+  }
+  throw new Error('All models unavailable');
+}
+
 const SYSTEM_INSTRUCTION = `You are an a cappella music discovery expert with deep knowledge of vocal groups worldwide.
 Your role is to ask targeted questions (rated 1–10 by the user) to understand their music preferences,
 then recommend a cappella groups and songs tailored to their taste.
@@ -53,8 +74,7 @@ Return ONLY this JSON (no markdown, no explanation):
 }`;
 
   try {
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+    const result = await generateWithFallback({
       contents: prompt,
       config: { systemInstruction: SYSTEM_INSTRUCTION }
     });
@@ -113,8 +133,7 @@ Return ONLY this JSON (no markdown, no explanation):
 Recommend exactly 4 groups and 4 songs. Prioritize specificity and genuine fit over variety.`;
 
   try {
-    const result = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+    const result = await generateWithFallback({
       contents: prompt,
       config: { systemInstruction: SYSTEM_INSTRUCTION }
     });
