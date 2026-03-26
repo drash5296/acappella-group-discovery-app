@@ -54,7 +54,7 @@ Return ONLY this JSON (no markdown, no explanation):
 
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash',
       systemInstruction: SYSTEM_INSTRUCTION
     });
 
@@ -115,7 +115,7 @@ Recommend exactly 4 groups and 4 songs. Prioritize specificity and genuine fit o
 
   try {
     const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash',
       systemInstruction: SYSTEM_INSTRUCTION
     });
 
