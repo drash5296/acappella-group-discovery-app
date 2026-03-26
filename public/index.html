@@ -5,721 +5,2444 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>アカペラグループ発掘アプリ</title>
 <style>
-/* ── Reset & Base ─────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg:        #0d0d1a;
-  --surface:   #151528;
-  --card:      #1c1c36;
-  --border:    #2e2e52;
-  --accent:    #7c5cfc;
-  --accent2:   #c084fc;
-  --text:      #e8e6f0;
-  --muted:     #8884a0;
-  --success:   #4ade80;
-  --radius:    16px;
-  --shadow:    0 8px 32px rgba(0,0,0,.5);
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg1:#0d0d1a;--bg2:#12122a;--accent:#a855f7;--accent2:#6366f1;
+  --gold:#f59e0b;--card:#1a1a35;--card2:#22224a;--text:#e2e8f0;--sub:#94a3b8;
 }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px 16px 80px;
-}
-
-/* ── Header ───────────────────────────────────────── */
-header {
-  width: 100%;
-  max-width: 680px;
-  text-align: center;
-  margin-bottom: 32px;
-}
-.logo {
-  font-size: 13px;
-  letter-spacing: .15em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-h1 {
-  font-size: clamp(22px, 5vw, 30px);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: 1.3;
-}
-
-/* ── Progress bar ─────────────────────────────────── */
-.progress-wrap {
-  width: 100%;
-  max-width: 680px;
-  margin-bottom: 32px;
-}
-.progress-label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.progress-track {
-  height: 6px;
-  background: var(--border);
-  border-radius: 99px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  border-radius: 99px;
-  transition: width .5s ease;
-}
-
-/* ── Main card ────────────────────────────────────── */
-.card {
-  width: 100%;
-  max-width: 680px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 36px 32px;
-  box-shadow: var(--shadow);
-}
-
-/* ── Welcome screen ───────────────────────────────── */
-#welcome {
-  text-align: center;
-}
-.music-icon {
-  font-size: 56px;
-  margin-bottom: 24px;
-  display: block;
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-8px); }
-}
-#welcome h2 {
-  font-size: 22px;
-  margin-bottom: 12px;
-}
-#welcome p {
-  color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 32px;
-}
-.badge-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 32px;
-}
-.badge {
-  background: rgba(124,92,252,.15);
-  border: 1px solid rgba(124,92,252,.3);
-  color: var(--accent2);
-  border-radius: 99px;
-  font-size: 12px;
-  padding: 4px 12px;
-}
-
-/* ── Button ───────────────────────────────────────── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  border: none;
-  border-radius: 99px;
-  padding: 14px 32px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity .2s, transform .1s;
-}
-.btn:hover  { opacity: .9; }
-.btn:active { transform: scale(.97); }
-.btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
-
-/* ── Question screen ──────────────────────────────── */
-#question { display: none; }
-.q-number {
-  font-size: 12px;
-  color: var(--accent);
-  letter-spacing: .1em;
-  margin-bottom: 16px;
-}
-.q-text {
-  font-size: clamp(17px, 3vw, 21px);
-  font-weight: 600;
-  line-height: 1.55;
-  margin-bottom: 40px;
-}
-
-/* Slider */
-.slider-wrap {
-  margin-bottom: 32px;
-}
-.slider-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-.slider-score {
-  text-align: center;
-  font-size: 52px;
-  font-weight: 800;
-  color: var(--accent);
-  line-height: 1;
-  margin-bottom: 12px;
-  transition: color .2s;
-}
-input[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 8px;
-  background: var(--border);
-  border-radius: 99px;
-  outline: none;
-  cursor: pointer;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  box-shadow: 0 2px 8px rgba(124,92,252,.5);
-  cursor: pointer;
-  transition: transform .15s;
-}
-input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
-.pip-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 2px 0;
-}
-.pip {
-  width: 2px;
-  height: 8px;
-  background: var(--border);
-  border-radius: 1px;
-  transition: background .2s;
-}
-.pip.active { background: var(--accent); }
-
-.q-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* ── Loading ──────────────────────────────────────── */
-#loading { display: none; text-align: center; }
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
-  margin: 0 auto 20px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-#loading p { color: var(--muted); line-height: 1.8; font-size: 14px; }
-
-/* ── Results ──────────────────────────────────────── */
-#results { display: none; }
-.results-summary {
-  background: rgba(124,92,252,.12);
-  border: 1px solid rgba(124,92,252,.25);
-  border-radius: 12px;
-  padding: 20px 22px;
-  margin-bottom: 32px;
-  line-height: 1.7;
-  font-size: 15px;
-}
-.section-label {
-  font-size: 11px;
-  letter-spacing: .15em;
-  color: var(--accent);
-  text-transform: uppercase;
-  margin-bottom: 16px;
-}
-.group-grid {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 40px;
-}
-.group-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 22px;
-  transition: border-color .2s;
-}
-.group-card:hover { border-color: var(--accent); }
-.group-header {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.group-name {
-  font-size: 18px;
-  font-weight: 700;
-}
-.group-origin {
-  font-size: 12px;
-  color: var(--muted);
-}
-.group-style {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-.tag {
-  background: rgba(192,132,252,.12);
-  color: var(--accent2);
-  border-radius: 99px;
-  font-size: 11px;
-  padding: 3px 10px;
-}
-.group-desc {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 12px;
-}
-.starter-song {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text);
-  background: rgba(255,255,255,.04);
-  border-radius: 8px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-}
-.starter-song span:first-child { color: var(--accent2); font-size: 16px; }
-.match-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.match-item {
-  font-size: 12px;
-  color: var(--success);
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-}
-.match-item::before { content: '✓'; flex-shrink: 0; }
-
-/* Songs */
-.song-list {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 40px;
-}
-.song-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 18px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 12px;
-  align-items: start;
-}
-.song-num {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.song-title { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
-.song-group { font-size: 12px; color: var(--accent2); margin-bottom: 6px; }
-.song-why   { font-size: 13px; color: var(--muted); line-height: 1.5; }
-
-.restart-wrap {
-  display: flex;
-  justify-content: center;
-  padding-top: 8px;
-}
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  border-radius: 99px;
-  padding: 10px 24px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: border-color .2s, color .2s;
-}
-.btn-outline:hover { border-color: var(--accent); color: var(--text); }
-
-/* ── Fade-in ──────────────────────────────────────── */
-.fade-in {
-  animation: fadeIn .4s ease;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Error toast ──────────────────────────────────── */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #3b1f1f;
-  border: 1px solid #7a3030;
-  color: #ffaaaa;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  display: none;
-  z-index: 100;
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var(--text);min-height:100vh;overflow-x:hidden}
+ 
+/* ── Starfield ── */
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) infinite}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.9}}
+ 
+/* ── Layout ── */
+.screen{display:none;position:relative;z-index:1;min-height:100vh;padding:24px 16px;justify-content:center;align-items:center;flex-direction:column}
+.screen.active{display:flex}
+ 
+/* ── Language Screen ── */
+.logo{font-size:3.5rem;margin-bottom:8px;text-align:center}
+.app-title{font-size:1.8rem;font-weight:800;text-align:center;background:linear-gradient(135deg,#a855f7,#6366f1,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+.app-sub{color:var(--sub);text-align:center;margin-bottom:40px;font-size:.95rem;line-height:1.6}
+.lang-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;max-width:600px;width:100%}
+.lang-btn{background:var(--card);border:1.5px solid #2d2d5e;border-radius:14px;padding:16px 12px;cursor:pointer;color:var(--text);font-size:.95rem;font-weight:600;display:flex;align-items:center;gap:10px;transition:all .2s;justify-content:center}
+.lang-btn:hover{border-color:var(--accent);background:var(--card2);transform:translateY(-2px);box-shadow:0 8px 25px rgba(168,85,247,.3)}
+.lang-flag{font-size:1.5rem}
+ 
+/* ── Quiz Screen ── */
+.quiz-wrap{max-width:680px;width:100%;display:flex;flex-direction:column;gap:24px}
+.quiz-header{display:flex;justify-content:space-between;align-items:center}
+.quiz-logo{font-size:1.1rem;font-weight:700;color:var(--accent)}
+.progress-text{color:var(--sub);font-size:.9rem}
+.progress-bar{width:100%;height:6px;background:#2d2d5e;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:99px;transition:width .4s ease}
+.question-card{background:var(--card);border:1.5px solid #2d2d5e;border-radius:20px;padding:32px;min-height:260px;display:flex;flex-direction:column;gap:24px}
+.q-number{color:var(--accent);font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.q-text{font-size:1.25rem;font-weight:700;line-height:1.5;flex:1}
+.options-wrap{display:flex;flex-direction:column;gap:10px;margin:15px 0}
+.radio-label{display:flex;align-items:center;gap:12px;background:var(--card2);border:1.5px solid #2d2d5e;color:var(--text);border-radius:12px;padding:14px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.radio-label:hover{border-color:var(--accent);background:var(--card)}
+.radio-label input[type="radio"] { transform: scale(1.5); accent-color: var(--accent); cursor: pointer; margin-right: 8px;}
+.radio-label.selected { background:rgba(168,85,247,0.1); border-color:var(--accent); }
+.nav-btns{display:flex;gap:12px;justify-content:space-between}
+.btn{border:none;border-radius:12px;padding:14px 28px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-ghost{background:var(--card2);color:var(--sub);border:1.5px solid #2d2d5e}
+.btn-ghost:hover{border-color:var(--accent);color:var(--text)}
+.btn-primary{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;box-shadow:0 4px 20px rgba(168,85,247,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(168,85,247,.5)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+ 
+/* ── Result Screen ── */
+.result-wrap{max-width:760px;width:100%;display:flex;flex-direction:column;gap:28px;padding-bottom:40px}
+.result-title{font-size:1.6rem;font-weight:800;text-align:center;background:linear-gradient(135deg,var(--gold),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.result-sub{text-align:center;color:var(--sub);font-size:.9rem}
+.group-card{background:var(--card);border:1.5px solid #2d2d5e;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px;transition:border-color .2s}
+.group-card:hover{border-color:var(--accent)}
+.group-card.rank-1{border-color:var(--gold);box-shadow:0 0 30px rgba(245,158,11,.2)}
+.group-top{display:flex;align-items:flex-start;gap:16px}
+.rank-badge{min-width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;flex-shrink:0}
+.rank-1 .rank-badge{background:linear-gradient(135deg,#f59e0b,#d97706);color:#000}
+.rank-2 .rank-badge{background:linear-gradient(135deg,#94a3b8,#64748b);color:#fff}
+.rank-3 .rank-badge{background:linear-gradient(135deg,#cd7c45,#a05a2c);color:#fff}
+.rank-other .rank-badge{background:var(--card2);color:var(--sub)}
+.group-info{flex:1;min-width:0}
+.group-name{font-size:1.2rem;font-weight:800;margin-bottom:4px}
+.group-meta{color:var(--sub);font-size:.82rem;display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.group-tag{background:#2d2d5e;border-radius:6px;padding:2px 8px}
+.group-desc{font-size:.88rem;line-height:1.6;color:#c4c4e0}
+.match-bar-wrap{display:flex;align-items:center;gap:12px}
+.match-label{font-size:.82rem;color:var(--sub);white-space:nowrap}
+.match-bar{flex:1;height:8px;background:#2d2d5e;border-radius:99px;overflow:hidden}
+.match-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width 1s ease}
+.rank-1 .match-fill{background:linear-gradient(90deg,var(--gold),#f59e0b)}
+.match-pct{font-weight:800;font-size:.95rem;color:var(--accent)}
+.rank-1 .match-pct{color:var(--gold)}
+.songs-section{border-top:1px solid #2d2d5e;padding-top:14px}
+.songs-title{font-size:.82rem;font-weight:700;color:var(--sub);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.songs-list{display:flex;flex-direction:column;gap:8px}
+.song-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.song-name{font-size:.9rem;color:var(--text);flex:1}
+.yt-btn{background:#ff0000;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:.78rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:opacity .2s;white-space:nowrap}
+.yt-btn:hover{opacity:.85}
+.restart-wrap{text-align:center;padding-top:8px}
+.btn-restart{background:transparent;border:1.5px solid #2d2d5e;color:var(--sub);border-radius:12px;padding:12px 28px;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-restart:hover{border-color:var(--accent);color:var(--text)}
+ 
+/* ── Analyzing overlay ── */
+#analyzing{display:none;position:fixed;inset:0;z-index:100;background:rgba(13,13,26,.9);justify-content:center;align-items:center;flex-direction:column;gap:20px}
+#analyzing.show{display:flex}
+.spin{width:60px;height:60px;border:4px solid #2d2d5e;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.analyzing-text{color:var(--text);font-size:1.1rem;font-weight:600}
+ 
+@media(max-width:480px){
+  .app-title{font-size:1.4rem}
+  .logo{font-size:2.8rem}
+  .q-text{font-size:1.05rem}
+  .group-name{font-size:1rem}
 }
 </style>
 </head>
 <body>
-
-<header>
-  <div class="logo">🎵 A Cappella Discovery</div>
-  <h1>アカペラグループ<br>発掘アプリ</h1>
-</header>
-
-<!-- Progress (hidden until quiz starts) -->
-<div class="progress-wrap" id="progressWrap" style="display:none">
-  <div class="progress-label">
-    <span id="progressText">質問 1 / 10</span>
-    <span id="progressPct">0%</span>
-  </div>
-  <div class="progress-track">
-    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+ 
+<canvas id="stars"></canvas>
+<div id="analyzing"><div class="spin"></div><div class="analyzing-text" id="analyzing-text">分析中...</div></div>
+ 
+<!-- ① Language Screen -->
+<div class="screen active" id="lang-screen">
+  <div class="logo">🎵</div>
+  <div class="app-title" id="app-title">アカペラグループ発掘アプリ</div>
+  <div class="app-sub" id="app-sub">10の質問に答えて、あなたにぴったりの<br>アカペラグループを発見しよう！</div>
+  <div class="lang-grid">
+    <button class="lang-btn" onclick="selectLang('ja')"><span class="lang-flag">🇯🇵</span>日本語</button>
+    <button class="lang-btn" onclick="selectLang('en')"><span class="lang-flag">🇺🇸</span>English</button>
+    <button class="lang-btn" onclick="selectLang('zh')"><span class="lang-flag">🇨🇳</span>中文</button>
+    <button class="lang-btn" onclick="selectLang('ko')"><span class="lang-flag">🇰🇷</span>한국어</button>
+    <button class="lang-btn" onclick="selectLang('de')"><span class="lang-flag">🇩🇪</span>Deutsch</button>
+    <button class="lang-btn" onclick="selectLang('fr')"><span class="lang-flag">🇫🇷</span>Français</button>
+    <button class="lang-btn" onclick="selectLang('it')"><span class="lang-flag">🇮🇹</span>Italiano</button>
   </div>
 </div>
-
-<div class="card">
-
-  <!-- ── Welcome ── -->
-  <section id="welcome">
-    <span class="music-icon">🎤</span>
-    <h2>あなたにぴったりの<br>アカペラグループを見つけよう</h2>
-    <p>
-      10問の質問に1〜10のスコアで答えるだけ。<br>
-      AIがあなたの好みを分析して、国内外のアカペラグループと<br>
-      おすすめ曲を発掘します。
-    </p>
-    <div class="badge-row">
-      <span class="badge">🇯🇵 国内グループ対応</span>
-      <span class="badge">🌍 海外グループ対応</span>
-      <span class="badge">🤖 AI動的推薦</span>
-      <span class="badge">🎯 10問診断</span>
+ 
+<!-- ② Quiz Screen -->
+<div class="screen" id="quiz-screen">
+  <div class="quiz-wrap">
+    <div class="quiz-header">
+      <div class="quiz-logo">🎵 A Cappella</div>
+      <div class="progress-text" id="prog-text">1 / 10</div>
     </div>
-    <button class="btn" id="startBtn">診断スタート →</button>
-  </section>
-
-  <!-- ── Question ── -->
-  <section id="question">
-    <div class="q-number" id="qNumber">質問 1 / 10</div>
-    <div class="q-text" id="qText"></div>
-
-    <div class="slider-wrap">
-      <div class="slider-score" id="sliderScore">5</div>
-      <div class="slider-labels">
-        <span id="label1">—</span>
-        <span id="label10">—</span>
-      </div>
-      <input type="range" id="slider" min="1" max="10" value="5" step="1">
-      <div class="pip-row" id="pipRow">
-        <!-- 10 pips injected by JS -->
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:10%"></div></div>
+    <div class="question-card">
+      <div class="q-number" id="q-number">Q 1</div>
+      <div class="q-text" id="q-text">質問テキスト</div>
+      <div class="options-wrap" id="options-wrap">
+        <label class="radio-label"><input type="radio" name="q-option" value="1" onchange="selectOpt(1)"> <span id="opt-1">全くそう思わない</span></label>
+        <label class="radio-label"><input type="radio" name="q-option" value="3" onchange="selectOpt(3)"> <span id="opt-3">あまりそう思わない</span></label>
+        <label class="radio-label"><input type="radio" name="q-option" value="5" onchange="selectOpt(5)"> <span id="opt-5">どちらともいえない</span></label>
+        <label class="radio-label"><input type="radio" name="q-option" value="8" onchange="selectOpt(8)"> <span id="opt-8">ややそう思う</span></label>
+        <label class="radio-label"><input type="radio" name="q-option" value="10" onchange="selectOpt(10)"> <span id="opt-10">とてもそう思う</span></label>
       </div>
     </div>
-
-    <div class="q-actions">
-      <button class="btn" id="nextBtn">次へ →</button>
+    <div class="nav-btns">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevQ()">← <span id="lbl-prev">前へ</span></button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextQ()"><span id="lbl-next">次へ</span> →</button>
     </div>
-  </section>
-
-  <!-- ── Loading ── -->
-  <section id="loading">
-    <div class="spinner"></div>
-    <p id="loadingMsg">AIが次の質問を考えています…</p>
-  </section>
-
-  <!-- ── Results ── -->
-  <section id="results">
-    <div class="results-summary" id="resultsSummary"></div>
-
-    <div class="section-label">🎤 おすすめアカペラグループ</div>
-    <div class="group-grid" id="groupGrid"></div>
-
-    <div class="section-label">🎵 まず聴くべき曲</div>
-    <div class="song-list" id="songList"></div>
-
+  </div>
+</div>
+ 
+<!-- ③ Result Screen -->
+<div class="screen" id="result-screen">
+  <div class="result-wrap">
+    <div class="result-title" id="result-title">🏆 あなたにおすすめのグループ</div>
+    <div class="result-sub" id="result-sub">回答をもとにマッチ度を算出しました</div>
+    <div id="result-cards"></div>
     <div class="restart-wrap">
-      <button class="btn-outline" id="restartBtn">もう一度診断する</button>
+      <button class="btn-restart" onclick="restart()" id="btn-restart">🔄 もう一度やり直す</button>
     </div>
-  </section>
-
+  </div>
 </div>
-
-<div class="toast" id="toast"></div>
-
+ 
 <script>
-// ── State ─────────────────────────────────────────────────────────────────
-const state = {
-  screen: 'welcome',   // welcome | question | loading | results
-  questionNumber: 0,
-  history: [],         // [{question, label1, label10, answer}]
-  currentQuestion: null
+// ─────────────────────────────────────────────
+// TRANSLATIONS
+// ─────────────────────────────────────────────
+const T = {
+  ja:{
+    title:"アカペラグループ発掘アプリ",
+    sub:"10の質問に答えて、あなたにぴったりの<br>アカペラグループを発見しよう！",
+    analyzing:"分析中...",
+    resultTitle:"🏆 あなたにおすすめのグループ",
+    resultSub:"回答をもとにマッチ度を算出しました",
+    match:"マッチ度",
+    songs:"おすすめ楽曲",
+    origin:"出身",
+    restart:"🔄 もう一度やり直す",
+    opts:["全くそう思わない", "あまりそう思わない", "どちらともいえない", "ややそう思う", "とてもそう思う"],
+    prev:"前へ",next:"次へ",seeResult:"結果を見る",
+    yt:"YouTubeで検索",
+    ranks:["🥇","🥈","🥉","4th","5th"],
+  },
+  en:{
+    title:"A Cappella Group Discovery",
+    sub:"Answer 10 questions to find your perfect<br>a cappella group!",
+    analyzing:"Analyzing...",
+    resultTitle:"🏆 Your Top Matches",
+    resultSub:"Matched based on your answers",
+    match:"Match",
+    songs:"Recommended Songs",
+    origin:"Origin",
+    restart:"🔄 Start Over",
+    opts:["Strongly disagree", "Somewhat disagree", "Neutral", "Somewhat agree", "Strongly agree"],
+    prev:"Back",next:"Next",seeResult:"See Results",
+    yt:"Search on YouTube",
+    ranks:["🥇","🥈","🥉","4th","5th"],
+  },
+  zh:{
+    title:"无伴奏合唱探索",
+    sub:"回答10个问题，找到最适合你的<br>无伴奏合唱团！",
+    analyzing:"分析中...",
+    resultTitle:"🏆 为您推荐的合唱团",
+    resultSub:"根据您的回答计算匹配度",
+    match:"匹配度",
+    songs:"推荐曲目",
+    origin:"来自",
+    restart:"🔄 重新开始",
+    opts:["完全不同意", "不太同意", "中立", "比较同意", "非常同意"],
+    prev:"上一题",next:"下一题",seeResult:"查看结果",
+    yt:"在YouTube上搜索",
+    ranks:["🥇","🥈","🥉","第4名","第5名"],
+  },
+  ko:{
+    title:"아카펠라 발굴 앱",
+    sub:"10가지 질문에 답하고 나에게 딱 맞는<br>아카펠라 그룹을 찾아보세요！",
+    analyzing:"분석 중...",
+    resultTitle:"🏆 나에게 추천하는 그룹",
+    resultSub:"답변을 바탕으로 매칭도를 산출했습니다",
+    match:"매칭도",
+    songs:"추천 곡",
+    origin:"출신",
+    restart:"🔄 다시 시작",
+    opts:["전혀 그렇지 않다", "별로 그렇지 않다", "보통이다", "조금 그렇다", "매우 그렇다"],
+    prev:"이전",next:"다음",seeResult:"결과 보기",
+    yt:"YouTube에서 검색",
+    ranks:["🥇","🥈","🥉","4위","5위"],
+  },
+  de:{
+    title:"A-cappella-Entdeckung",
+    sub:"Beantworte 10 Fragen und finde deine perfekte<br>A-cappella-Gruppe!",
+    analyzing:"Analyse läuft...",
+    resultTitle:"🏆 Deine Top-Treffer",
+    resultSub:"Basierend auf deinen Antworten berechnet",
+    match:"Übereinstimmung",
+    songs:"Empfohlene Lieder",
+    origin:"Herkunft",
+    restart:"🔄 Neu starten",
+    opts:["Stimme gar nicht zu", "Stimme eher nicht zu", "Neutral", "Stimme eher zu", "Stimme voll zu"],
+    prev:"Zurück",next:"Weiter",seeResult:"Ergebnisse sehen",
+    yt:"Auf YouTube suchen",
+    ranks:["🥇","🥈","🥉","4.","5."],
+  },
+  fr:{
+    title:"Découverte A Cappella",
+    sub:"Répondez à 10 questions pour trouver votre groupe<br>a cappella idéal !",
+    analyzing:"Analyse en cours...",
+    resultTitle:"🏆 Vos meilleures correspondances",
+    resultSub:"Calculé en fonction de vos réponses",
+    match:"Correspondance",
+    songs:"Chansons recommandées",
+    origin:"Origine",
+    restart:"🔄 Recommencer",
+    opts:["Pas du tout d'accord", "Plutôt en désaccord", "Neutre", "Plutôt d'accord", "Tout à fait d'accord"],
+    prev:"Précédent",next:"Suivant",seeResult:"Voir les résultats",
+    yt:"Rechercher sur YouTube",
+    ranks:["🥇","🥈","🥉","4e","5e"],
+  },
+  it:{
+    title:"Scopri l'A Cappella",
+    sub:"Rispondi a 10 domande e trova il tuo gruppo<br>a cappella perfetto!",
+    analyzing:"Analisi in corso...",
+    resultTitle:"🏆 Le tue migliori corrispondenze",
+    resultSub:"Calcolato in base alle tue risposte",
+    match:"Corrispondenza",
+    songs:"Canzoni consigliate",
+    origin:"Origine",
+    restart:"🔄 Ricomincia",
+    opts:["Per niente d'accordo", "Poco d'accordo", "Neutrale", "Abbastanza d'accordo", "Pienamente d'accordo"],
+    prev:"Indietro",next:"Avanti",seeResult:"Vedi i risultati",
+    yt:"Cerca su YouTube",
+    ranks:["🥇","🥈","🥉","4°","5°"],
+  },
 };
-
-// ── DOM refs ──────────────────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-const screens = {
-  welcome:  $('welcome'),
-  question: $('question'),
-  loading:  $('loading'),
-  results:  $('results')
-};
-
-function showScreen(name) {
-  Object.entries(screens).forEach(([k, el]) => {
-    el.style.display = k === name ? 'block' : 'none';
-  });
-  if (name !== 'welcome') {
-    el => el?.classList.add('fade-in');
+ 
+// ─────────────────────────────────────────────
+// QUESTION POOL
+// dim: dimension key, dir: +1 normal / -1 inverted (score = 11 - answer)
+// ─────────────────────────────────────────────
+const QPOOL = [
+  {"dim":"harmony", id:'音楽を聴くとき、複雑なハーモニーや声の重なりに魅力を感じますか？',
+    ja:"音楽を聴くとき、複雑なハーモニーや声の重なりに魅力を感じますか？",
+    en:"Are you attracted to complex harmonies and layered vocal textures?",
+    zh:"您是否被复杂的和声和多层次的人声所吸引？",
+    ko:"복잡한 화음과 겹쳐진 보컬 레이어에 매력을 느끼시나요?",
+    de:"Fühlen Sie sich von komplexen Harmonien und geschichteten Vocals angezogen?",
+    fr:"Êtes-vous attiré par les harmonies complexes et les textures vocales superposées ?",
+    it:"Sei attratto/a da armonie complesse e texture vocali sovrapposte?"},
+  {"dim":"harmony", id:'声のアンサンブルにおける音楽的テクニックや表現力に注目して聴きますか？',
+    ja:"声のアンサンブルにおける音楽的テクニックや表現力に注目して聴きますか？",
+    en:"Do you pay attention to musical technique and expression in vocal ensembles?",
+    zh:"您在聆听时是否关注人声合唱的音乐技巧与表现力？",
+    ko:"보컬 앙상블에서 음악적 기법과 표현력에 주목해서 듣나요?",
+    de:"Achten Sie auf musikalische Technik und Ausdruck in Vokalensembles?",
+    fr:"Prêtez-vous attention à la technique musicale et à l'expression dans les ensembles vocaux ?",
+    it:"Presti attenzione alla tecnica musicale e all'espressione negli ensemble vocali?"},
+  {"dim":"harmony", id:'メロディそのものよりも、その裏で鳴っている和音進行やコーラスが気になりますか？',
+    ja:"メロディそのものよりも、その裏で鳴っている和音進行やコーラスが気になりますか？",
+    en:"Are you more interested in the underlying chord progressions and choruses than just the melody?",
+    zh:"相比于主旋律，您更关注背后的和弦进行和和声伴唱吗？",
+    ko:"멜로디 그 자체보다 그 뒤에서 울리는 코드 진행이나 코러스가 더 신경 쓰이나요?",
+    de:"Achten Sie mehr auf die zugrunde liegenden Akkordfolgen und Chöre als nur auf die Melodie?",
+    fr:"Êtes-vous plus intéressé par les progressions d'accords et les chœurs que par la mélodie elle-même ?",
+    it:"Sei più interessato/a alle progressioni di accordi sottostanti e ai cori piuttosto che alla sola melodia?"},
+  {"dim":"harmony", id:'不協和音スレスレのテンションコードや、ジャジーな難解な和声が好きですか？',
+    ja:"不協和音スレスレのテンションコードや、ジャジーな難解な和声が好きですか？",
+    en:"Do you enjoy tension chords verging on dissonance and complex jazzy harmonies?",
+    zh:"您喜欢接近不协和音的张力和弦或复杂难懂的爵士和声吗？",
+    ko:"불협화음에 가까운 텐션 코드나 재즈적인 난해한 화성을 좋아하나요?",
+    de:"Mögen Sie fast dissonante Spannungsakkorde und komplexe Jazz-Harmonien?",
+    fr:"Aimez-vous les accords de tension proches de la dissonance et les harmonies jazz complexes ?",
+    it:"Ti piacciono gli accordi di tensione vicini alla dissonanza e le armonie jazz complesse?"},
+  {"dim":"harmony", id:'きれいにピッチが合った、透明感のある純正律のような響きに感動しますか？',
+    ja:"きれいにピッチが合った、透明感のある純正律のような響きに感動しますか？",
+    en:"Are you moved by perfectly pitched, crystal-clear, just-intonation-like blended sounds?",
+    zh:"您会被音准完美、晶莹剔透、犹如纯律般的和声所感动吗？",
+    ko:"피치가 완벽히 맞는 투명한 순정률 같은 울림에 감동하나요?",
+    de:"Lassen Sie sich von perfekt gestimmten, kristallklaren Klängen bewegen?",
+    fr:"Êtes-vous ému par les sons clairs, à la justesse parfaite et intonative ?",
+    it:"Sei commosso/a dai suoni chiari, con intonazione perfetta e intonativa?"},
+  {"dim":"tempo", id:'テンポが速くてリズミカルな曲を好んで聴きますか？',
+    ja:"テンポが速くてリズミカルな曲を好んで聴きますか？",
+    en:"Do you prefer fast-paced, rhythmic music?",
+    zh:"您喜欢节奏明快、律动感强的音乐吗？",
+    ko:"빠르고 리드미컬한 음악을 즐겨 듣나요?",
+    de:"Hören Sie lieber schnelle, rhythmische Musik?",
+    fr:"Préférez-vous la musique rapide et rythmée ?",
+    it:"Preferisci la musica veloce e ritmica?"},
+  {"dim":"tempo", id:'ゆったりとしたバラードよりも、疾走感のあるアップテンポな曲に惹かれますか？',
+    ja:"ゆったりとしたバラードよりも、疾走感のあるアップテンポな曲に惹かれますか？",
+    en:"Are you drawn to upbeat, fast-driving songs more than slow ballads?",
+    zh:"比起舒缓的抒情曲，您更被有疾驰感的快歌所吸引吗？",
+    ko:"느긋한 발라드보다 질주감이 있는 빠른 템포의 곡에 끌리나요?",
+    de:"Zieht es Sie eher zu treibenden, schnellen Songs als zu langsamen Balladen?",
+    fr:"Êtes-vous plus attiré par les chansons rapides et entraînantes que par les ballades lentes ?",
+    it:"Sei più attratto/a dalle canzoni veloci e incalzanti piuttosto che dalle ballate lente?"},
+  {"dim":"tempo", id:'聴きながら自然と足や頭で速いリズムを刻んでしまうことが多いですか？',
+    ja:"聴きながら自然と足や頭で速いリズムを刻んでしまうことが多いですか？",
+    en:"Do you often find yourself tapping your foot or nodding your head to a fast beat?",
+    zh:"您在聆听时经常会不自觉地用脚或头打着快节奏的节拍吗？",
+    ko:"음악을 들으면서 자연스럽게 발이나 고개로 빠른 박자를 맞추는 편인가요?",
+    de:"Tippen Sie oft mit dem Fuß oder nicken mit dem Kopf zu einem schnellen Beat?",
+    fr:"Vous surprenez-vous souvent à taper du pied sur un rythme rapide ?",
+    it:"Ti ritrovi spesso a battere il piede o annuire la testa a un ritmo veloce?"},
+  {"dim":"tempo", id:'静かで落ち着く音楽よりも、心拍数が上がるようなスピーディな音楽を好みますか？',
+    ja:"静かで落ち着く音楽よりも、心拍数が上がるようなスピーディな音楽を好みますか？",
+    en:"Do you prefer speedy music that raises your heart rate over quiet, calming music?",
+    zh:"比起安静详和的音乐，您更喜欢能让心跳加速的快节奏音乐吗？",
+    ko:"조용하고 차분한 음악보다는 심박수를 올리는 스피디한 음악을 선호하나요?",
+    de:"Bevorzugen Sie schnelle Musik, die den Puls anregt, anstatt ruhiger Musik?",
+    fr:"Préférez-vous la musique rapide qui fait battre le cœur au lieu de la musique calme ?",
+    it:"Preferisci la musica veloce che accelera il battito rispetto a quella calma?"},
+  {"dim":"modern", id:'クラシック音楽よりもポップや現代的なスタイルの音楽が好きですか？',
+    ja:"クラシック音楽よりもポップや現代的なスタイルの音楽が好きですか？",
+    en:"Do you prefer pop or modern music styles over classical music?",
+    zh:"您更喜欢流行或现代音乐风格，而非古典音乐？",
+    ko:"클래식 음악보다 팝이나 현대적인 음악 스타일을 선호하시나요?",
+    de:"Bevorzugen Sie Pop oder moderne Musikstile gegenüber klassischer Musik?",
+    fr:"Préférez-vous le pop ou les styles modernes à la musique classique ?",
+    it:"Preferisci gli stili pop o moderni alla musica classica?"},
+  {"dim":"modern", id:'ジャンルを越えた革新的・実験的な音楽アレンジに惹かれますか？',
+    ja:"ジャンルを越えた革新的・実験的な音楽アレンジに惹かれますか？",
+    en:"Are you drawn to innovative, genre-crossing musical arrangements?",
+    zh:"您是否被跨越流派的创新实验性音乐编曲所吸引？",
+    ko:"장르를 초월한 혁신적·실험적인 음악 편곡에 끌리나요?",
+    de:"Zieht es Sie zu innovativen, genreübergreifenden Arrangements?",
+    fr:"Êtes-vous attiré par les arrangements musicaux innovants qui traversent les genres ?",
+    it:"Sei attratto/a da arrangiamenti musicali innovativi che attraversano i generi?"},
+  {"dim":"modern", id:'最新のチャートに入っているような最近のヒット曲をよく聴きますか？',
+    ja:"最新のチャートに入っているような最近のヒット曲をよく聴きますか？",
+    en:"Do you frequently listen to recent hits from the latest charts?",
+    zh:"您经常听最新排行榜上的当红热门歌曲吗？",
+    ko:"최신 차트에 오르는 최근 히트곡을 자주 듣나요?",
+    de:"Hören Sie häufig aktuelle Hits aus den Charts?",
+    fr:"Écoutez-vous fréquemment les succès récents des classements ?",
+    it:"Ascolti frequentemente i successi recenti dalle classifiche?"},
+  {"dim":"modern", id:'生楽器中心のオールドスクールなサウンドより、エレクトロやEDM的な処理がされた音楽が好きですか？',
+    ja:"生楽器中心のオールドスクールなサウンドより、エレクトロやEDM的な処理がされた音楽が好きですか？",
+    en:"Do you prefer electro/EDM-styled processed sounds over old-school acoustic instrumentation?",
+    zh:"比起以原声乐器为主的复古音色，您更喜欢经过电音或EDM处理的音乐吗？",
+    ko:"통기타 중심의 올드스쿨 사운드보다 일렉트로나 EDM 느낌으로 가공된 음악이 좋나요?",
+    de:"Mögen Sie eher elektronische EDM-Sounds als akustische Old-School-Instrumente?",
+    fr:"Préférez-vous l'électro/EDM aux instruments acoustiques plus traditionnels ?",
+    it:"Preferisci l'electro/EDM agli strumenti acustici vecchia scuola?"},
+  {"dim":"modern", id:'昔の曲でも、EDMやトラップなど現代風に大幅にアレンジされたカバーなら好きになれますか？',
+    ja:"昔の曲でも、EDMやトラップなど現代風に大幅にアレンジされたカバーなら好きになれますか？",
+    en:"Even if it's an old song, do you enjoy it if it's a heavily modernized cover (like EDM)?",
+    zh:"即便是老歌，如果是被大幅改编为EDM等现代风格的翻唱，您会喜欢吗？",
+    ko:"옛날 곡이라도 EDM 등 현대식으로 크게 편곡된 커버라면 좋아하나요?",
+    de:"Mögen Sie stark modernisierte Coverversionen alter Lieder?",
+    fr:"Aimez-vous les reprises fortement modernisées (comme l'EDM) de vieilles chansons ?",
+    it:"Ti piacciono le cover fortemente modernizzate (come EDM) di vecchie canzoni?"},
+  {"dim":"size", id:'大人数の合唱団よりも小編成（2〜5名）のグループが好きですか？',
+    ja:"大人数の合唱団よりも小編成（2〜5名）のグループが好きですか？",
+    en:"Do you prefer small groups (2–5 members) over large choirs?",
+    zh:"您更喜欢小型组合（2–5人）而非大型合唱团？",
+    ko:"대규모 합창단보다 소규모 그룹(2~5인)을 선호하시나요?",
+    de:"Bevorzugen Sie kleine Gruppen (2–5 Mitglieder) gegenüber großen Chören?",
+    fr:"Préférez-vous les petits groupes (2–5 membres) aux grands chœurs ?",
+    it:"Preferisci i piccoli gruppi (2–5 membri) ai grandi cori?"},
+  {"dim":"size", id:'大勢の迫力ある声の壁よりも、一人一人の声の個性がくっきり聞こえる方が好みですか？',
+    ja:"大勢の迫力ある声の壁よりも、一人一人の声の個性がくっきり聞こえる方が好みですか？",
+    en:"Do you prefer clearly hearing individual voices rather than a monumental wall of choral sound?",
+    zh:"相比于震撼的庞大人声墙，您更偏好能清晰听到每一个个体声音特色的音乐吗？",
+    ko:"웅장한 합창의 소리벽보다는 한 명 한 명의 목소리 개성이 또렷하게 들리는 쪽이 좋나요?",
+    de:"Hören Sie lieber individuelle Stimmen deutlich heraus als eine monumentale Chorwand?",
+    fr:"Préférez-vous entendre des voix individuelles plutôt qu'un mur sonore choral ?",
+    it:"Preferisci sentire voci individuali piuttosto che un monumentale muro corale?"},
+  {"dim":"size", id:'少人数ならではのタイトな息の合い方や、繊細なアンサンブルに魅力を感じますか？',
+    ja:"少人数ならではのタイトな息の合い方や、繊細なアンサンブルに魅力を感じますか？",
+    en:"Are you charmed by the tight sync and delicate ensemble singing typical of small groups?",
+    zh:"您是否觉得少数人紧密的配合与细腻的人声合奏格外有魅力？",
+    ko:"소수인원 특유의 타이트한 호흡이나 섬세한 앙상블에 매력을 느끼나요?",
+    de:"Sind Sie von den eng abgestimmten und zarten Ensembles kleiner Gruppen angetan?",
+    fr:"Êtes-vous attiré par la synchronisation et l'ensemble délicat des petits groupes ?",
+    it:"Sei affascinato/a dalla sincronia unita e dall'ensemble delicato dei piccoli gruppi?"},
+  {"dim":"size", id:'壮大なオーケストラのような合唱よりも、カフェで聴くようなアコースティックな編成が好きですか？',
+    ja:"壮大なオーケストラのような合唱よりも、カフェで聴くようなアコースティックな編成が好きですか？",
+    en:"Do you prefer intimate, acoustic-like setups over grand, orchestral-scale choirs?",
+    zh:"与气势磅礴如交响乐般的合唱相比，您是否更喜欢类似在咖啡馆聆听的那种亲密编制？",
+    ko:"장대한 오케스트라 같은 합창보다 카페에서 듣는 듯한 소규모 편성의 음악이 좋나요?",
+    de:"Bevorzugen Sie eine intime Akustik-Atmosphäre anstatt von orchestralen Chören?",
+    fr:"Préférez-vous l'atmosphère intime de l'acoustique aux grands chœurs orchestraux ?",
+    it:"Preferisci un'atmosfera intima acustica ai grandi cori orchestrali?"},
+  {"dim":"energy", id:'聴いていて思わず体が動くような、エネルギッシュな音楽が好きですか？',
+    ja:"聴いていて思わず体が動くような、エネルギッシュな音楽が好きですか？",
+    en:"Do you enjoy energetic music that makes your body move?",
+    zh:"您喜欢那种让身体不自觉律动的充满活力的音乐吗？",
+    ko:"몸이 저절로 움직이게 되는 에너지 넘치는 음악을 좋아하나요?",
+    de:"Mögen Sie energiegeladene Musik, die Sie zum Bewegen bringt?",
+    fr:"Aimez-vous la musique énergique qui donne envie de bouger ?",
+    it:"Ti piace la musica energica che ti fa muovere il corpo?"},
+  {"dim":"energy", id:'ライブ感があってエンターテインメント性の高いパフォーマンスが好きですか？',
+    ja:"ライブ感があってエンターテインメント性の高いパフォーマンスが好きですか？",
+    en:"Do you enjoy highly entertaining live-feeling performances?",
+    zh:"您喜欢充满现场感、娱乐性强的表演吗？",
+    ko:"현장감 있고 엔터테인먼트성이 높은 퍼포먼스를 좋아하나요?",
+    de:"Mögen Sie mitreißende Live-Performances mit hohem Unterhaltungswert?",
+    fr:"Aimez-vous les performances très divertissantes avec une atmosphère live ?",
+    it:"Ti piacciono le performance molto entusiasmanti con un feeling dal vivo?"},
+  {"dim":"energy", id:'ロックやダンスミュージックのような、アグレッシブで迫力あるボーカルを求めますか？',
+    ja:"ロックやダンスミュージックのような、アグレッシブで迫力あるボーカルを求めますか？",
+    en:"Do you crave aggressive and powerful vocals typical of rock or dance music?",
+    zh:"您会追求摇滚或舞曲那种充满攻击性且震撼人心的人声表现吗？",
+    ko:"록이나 댄스 음악 같은 공격적이고 박력 있는 보컬을 선호하나요?",
+    de:"Verlangen Sie nach aggressiven, kraftvollen Vocals wie bei Rock/Dance?",
+    fr:"Souhaitez-vous des voix agressives et puissantes typiques du rock ou de l'électro ?",
+    it:"Desideri voci aggressive e potenti tipiche del rock o della dance?"},
+  {"dim":"energy", id:'観客が一緒に歌ったり叫んだりするような、熱狂的なステージが好きですか？',
+    ja:"観客が一緒に歌ったり叫んだりするような、熱狂的なステージが好きですか？",
+    en:"Do you love frenetic stages where the audience sings and shouts along?",
+    zh:"您喜欢那种让全场观众跟着大合唱、一同尖叫的狂热舞台吗？",
+    ko:"관객이 다 같이 노래하고 함성을 지르는 열광적인 무대가 좋나요?",
+    de:"Lieben Sie ekstatische Bühnenauftritte, bei denen das Publikum mitsingt?",
+    fr:"Aimez-vous les scènes frénétiques où le public chante et crie avec eux ?",
+    it:"Ami i palchi frenetici dove il pubblico canta e urla insieme?"},
+  {"dim":"energy", id:'静かで繊細な表現よりも、大音量でパワフルに響き渡る声の圧を好みますか？',
+    ja:"静かで繊細な表現よりも、大音量でパワフルに響き渡る声の圧を好みますか？",
+    en:"Do you prefer the loud, powerful sheer pressure of massive vocals over quiet expression?",
+    zh:"比起安静细腻的表现，您更加偏爱大音量、充满力量感的声压吗？",
+    ko:"조용하고 섬세한 표현보다 큰 성량으로 강력하게 울려 퍼지는 음압을 선호하나요?",
+    de:"Bevorzugen Sie die pure stimmliche Wucht anstelle von ruhigem Ausdruck?",
+    fr:"Préférez-vous la puissance des voix fortes plutôt que l'expression douce ?",
+    it:"Preferisci la potenza delle voci forti rispetto all'espressione tranquilla?"},
+  {"dim":"japanese", id:'日本語で歌われた音楽を多く聴きますか？',
+    ja:"日本語で歌われた音楽を多く聴きますか？",
+    en:"Do you often listen to music sung in Japanese?",
+    zh:"您经常收听用日语演唱的音乐吗？",
+    ko:"일본어로 불리는 음악을 자주 듣나요?",
+    de:"Hören Sie oft Musik, die auf Japanisch gesungen wird?",
+    fr:"Écoutez-vous souvent de la musique chantée en japonais ?",
+    it:"Ascolti spesso musica cantata in giapponese?"},
+  {"dim":"japanese", id:'J-POPやアニメソングなどを普段からよく聴きますか？',
+    ja:"J-POPやアニメソングなどを普段からよく聴きますか？",
+    en:"Do you regularly listen to J-POP or Anime songs?",
+    zh:"您平时常听J-POP或动漫歌曲吗？",
+    ko:"평소 J-POP이나 애니메이션 주제가를 자주 듣는 편인가요?",
+    de:"Hören Sie regelmäßig J-POP oder Anime-Songs?",
+    fr:"Écoutez-vous régulièrement de la J-POP ou des chansons d'anime ?",
+    it:"Ascolti regolarmente J-POP o canzoni degli Anime?"},
+  {"dim":"japanese", id:'洋楽よりも、歌詞の意味がダイレクトに伝わる日本の曲の方が感情移入しやすいですか？',
+    ja:"洋楽よりも、歌詞の意味がダイレクトに伝わる日本の曲の方が感情移入しやすいですか？",
+    en:"Do you find it easier to relate to Japanese songs where you instantly understand the lyrics?",
+    zh:"比起欧美流行乐，您是否更容易对能直接理解歌词含义的日语歌曲产生共鸣？",
+    ko:"팝송보다 가사 의미가 바로 전달되는 일본 곡에 감정이입하기 쉬운가요?",
+    de:"Können Sie sich besser mit japanischen Texten identifizieren als mit westlichen?",
+    fr:"Avez-vous plus de facilité à vous identifier aux chansons japonaises ?",
+    it:"Ti identifichi di più con le canzoni giapponesi rispetto a quelle occidentali?"},
+  {"dim":"japanese", id:'日本のアーティストが持つ特有のメロディセンスやコード進行が好きですか？',
+    ja:"日本のアーティストが持つ特有のメロディセンスやコード進行が好きですか？",
+    en:"Do you like the melody sense and chord progressions unique to Japanese artists?",
+    zh:"您喜欢日本歌手独有的旋律感以及和弦走向吗？",
+    ko:"일본 아티스트들 특유의 멜로디 센스나 코드 진행을 좋아하나요?",
+    de:"Mögen Sie das Melodiegefühl und die Akkordfolgen japanischer Künstler?",
+    fr:"Aimez-vous le sens mélodique et les suites d'accords des artistes japonais ?",
+    it:"Ti piacciono il senso melodico e le progressioni di accordi degli artisti giapponesi?"},
+  {"dim":"beatbox", id:'声だけで楽器音やビートを再現するビートボックスは好きですか？',
+    ja:"声だけで楽器音やビートを再現するビートボックスは好きですか？",
+    en:"Do you enjoy beatboxing and vocal percussion?",
+    zh:"您喜欢用声音模拟乐器和节拍的Beatbox吗？",
+    ko:"목소리로 악기 소리와 비트를 재현하는 비트박스를 좋아하나요?",
+    de:"Mögen Sie Beatboxing und stimmliche Perkussion?",
+    fr:"Aimez-vous le beatbox et la percussion vocale ?",
+    it:"Ti piace il beatboxing e la percussione vocale?"},
+  {"dim":"beatbox", id:'ドラムやベースの音が、人間の口から出ていると知ると興奮しますか？',
+    ja:"ドラムやベースの音が、人間の口から出ていると知ると興奮しますか？",
+    en:"Does it excite you knowing that drum and bass sounds are being made purely by the human mouth?",
+    zh:"当您得知这些鼓与贝斯声都是纯粹由人声发出时，会感到兴奋吗？",
+    ko:"드럼이나 베이스 소리가 사람의 입에서 나오고 있다는 사실에 흥분되나요?",
+    de:"Begeistert es Sie, wenn Drum- und Bass-Sounds rein stimmlich erzeugt werden?",
+    fr:"Êtes-vous excité de savoir que les percussions sont faites uniquement par la voix humaine ?",
+    it:"Ti entusiasma sapere che i suoni di percussione sono fatti puramente con la bocca umana?"},
+  {"dim":"beatbox", id:'ボーカルパーカッションソロの超絶技巧（高速ビートやスクラッチ音）に惹かれますか？',
+    ja:"ボーカルパーカッションソロの超絶技巧（高速ビートやスクラッチ音）に惹かれますか？",
+    en:"Are you drawn to the extreme techniques of vocal percussion solos (fast rhythms, scratches)?",
+    zh:"您被Beatbox独奏的高超技巧（高速节拍、打碟声等）所吸引吗？",
+    ko:"보컬 퍼커션 솔로의 초절기교(고속 비트나 스크래치 음)에 끌리나요?",
+    de:"Sind Sie von den extremen Techniken vokaler Perkussionsoli fasziniert?",
+    fr:"Êtes-vous attiré par les techniques extrêmes des solos de beatbox ?",
+    it:"Sei attratto/a dalle tecniche estreme dei soli di percussione vocale?"},
+  {"dim":"beatbox", id:'ただ歌うだけでなく、声を使って「まるで一つのバンドのように」演奏するスタイルが好きですか？',
+    ja:"ただ歌うだけでなく、声を使って「まるで一つのバンドのように」演奏するスタイルが好きですか？",
+    en:"Do you prefer groups that emulate a full instrumental band using just their voices?",
+    zh:"您不仅喜欢演唱，还更偏好用人声演绎“宛如一整支乐队”的风格吗？",
+    ko:"단순히 노래만 부르는 것이 아니라, 목소리로 '마치 하나의 밴드처럼' 연주하는 스타일을 좋아하나요?",
+    de:"Bevorzugen Sie Gruppen, die mit der Stimme eine komplette Band simulieren?",
+    fr:"Préférez-vous les groupes qui imitent tout un orchestre avec leurs voix ?",
+    it:"Preferisci gruppi che emulano un'intera band strumentale usando solo le voci?"},
+  {"dim":"beatbox", id:'リズム隊（ベースとボイスパーカッション）のグルーヴが強力な曲にノリを感じますか？',
+    ja:"リズム隊（ベースとボイスパーカッション）のグルーヴが強力な曲にノリを感じますか？",
+    en:"Do you feel the groove most when the rhythm section (vocal bass and percussion) is exceptionally strong?",
+    zh:"当节奏组（人声贝斯与Beatbox）表现极其出彩时，您会感到更加律动吗？",
+    ko:"리듬 파트(베이스와 보이스 퍼커션)의 그루브가 강력한 곡에서 흥을 느끼나요?",
+    de:"Spüren Sie den Groove besonders, wenn Bass und Beatbox richtig pushen?",
+    fr:"Ressentez-vous le groove quand la section rythmique vocale est très présente ?",
+    it:"Senti il groove specialmente quando basso e beatbox sono molto presenti?"},
+  {"dim":"upbeat", id:'明るくポジティブな雰囲気の曲を好んで聴きますか？',
+    ja:"明るくポジティブな雰囲気の曲を好んで聴きますか？",
+    en:"Do you prefer cheerful and upbeat songs?",
+    zh:"您偏爱欢快积极氛围的歌曲吗？",
+    ko:"밝고 긍정적인 분위기의 곡을 즐겨 듣나요?",
+    de:"Bevorzugen Sie fröhliche und lebhafte Lieder?",
+    fr:"Préférez-vous les chansons gaies et entraînantes ?",
+    it:"Preferisci canzoni allegre e vivaci?"},
+  {"dim":"upbeat", id:'悲しい失恋ソングや暗い曲調よりも、ハッピーでノリの良い曲を聴く方が気分が上がりますか？',
+    ja:"悲しい失恋ソングや暗い曲調よりも、ハッピーでノリの良い曲を聴く方が気分が上がりますか？",
+    en:"Does happy, upbeat music lift your mood more than sad or gloomy heartbreak songs?",
+    zh:"比起悲伤的失恋歌曲或阴暗的曲调，听开心又带感的歌曲更能让您心情愉悦吗？",
+    ko:"슬픈 실연 노래나 어두운 곡조보다는 해피하고 신나는 곡을 들을 때 기분이 더 좋아지나요?",
+    de:"Hebt fröhliche Musik Ihre Laune mehr als traurige Lieder?",
+    fr:"La musique joyeuse vous remonte-t-elle le moral plus que les chansons tristes ?",
+    it:"La musica allegra ti risolleva il morale più delle canzoni tristi?"},
+  {"dim":"upbeat", id:'落ち込んだときは、元気をもらえるような明るいメロディの曲を聴きたいですか？',
+    ja:"落ち込んだときは、元気をもらえるような明るいメロディの曲を聴きたいですか？",
+    en:"When feeling down, do you seek out bright melodies to give you energy?",
+    zh:"当您感到沮丧时，会想听拥有明快旋律、能给人带来力量的歌曲吗？",
+    ko:"우울할 때는 에너지를 얻을 수 있는 밝은 멜로디의 곡을 듣고 싶나요?",
+    de:"Hören Sie helle, aufbauende Melodien, wenn Sie deprimiert sind?",
+    fr:"Cherchez-vous des mélodies radieuses pour vous ressourcer quand vous êtes triste ?",
+    it:"Cerchi melodie solari per ricaricarti quando ti senti giù?"},
+  {"dim":"upbeat", id:'笑顔で楽しく歌い踊る姿を見るのが好きですか？',
+    ja:"笑顔で楽しく歌い踊る姿を見るのが好きですか？",
+    en:"Do you enjoy watching performers sing and dance cheerfully with smiles?",
+    zh:"您喜欢看表演者带着笑容、愉快地载歌载舞的样子吗？",
+    ko:"웃는 얼굴로 즐겁게 노래하고 춤추는 모습을 보는 것이 좋나요?",
+    de:"Sehen Sie gerne zu, wie Performer fröhlich singen und tanzen?",
+    fr:"Aimez-vous regarder des interprètes chanter et danser avec le sourire ?",
+    it:"Ti piace guardare artisti cantare e ballare con il sorriso?"},
+  {"dim":"covers", id:'よく知られた曲のア・カペラカバーを楽しむことが多いですか？',
+    ja:"よく知られた曲のア・カペラカバーを楽しむことが多いですか？",
+    en:"Do you enjoy a cappella cover versions of well-known songs?",
+    zh:"您是否经常欣赏知名歌曲的无伴奏合唱翻唱版本？",
+    ko:"잘 알려진 곡의 아카펠라 커버 버전을 즐겨 듣나요?",
+    de:"Genießen Sie A-cappella-Coverversionen bekannter Lieder?",
+    fr:"Appréciez-vous les versions a cappella de chansons connues ?",
+    it:"Ti piacciono le cover a cappella di canzoni famose?"},
+  {"dim":"covers", id:'オリジナル曲（アーティストの自作曲）よりも、既存の名曲がどうアレンジされたかに興味がありますか？',
+    ja:"オリジナル曲（アーティストの自作曲）よりも、既存の名曲がどうアレンジされたかに興味がありますか？",
+    en:"Are you more interested in how famous songs are arranged than in original compositions?",
+    zh:"比起艺术家的原创曲目，您更对经典名曲如何被改编感兴趣吗？",
+    ko:"아티스트의 오리지널 곡보다 기존 명곡들이 어떻게 편곡되었는지에 더 관심이 가나요?",
+    de:"Interessiert Sie das Arrangement bekannter Hits mehr als Originalkompositionen?",
+    fr:"Êtes-vous plus intéressé par les arrangements de chansons célèbres que par les originaux ?",
+    it:"Sei più interessato/a all'arrangiamento dei successi rispetto ai brani originali?"},
+  {"dim":"covers", id:'YouTube等で「〇〇歌ってみた」や有名な洋楽のカバー動画を見るのが好きですか？',
+    ja:"YouTube等で「〇〇歌ってみた」や有名な洋楽のカバー動画を見るのが好きですか？",
+    en:"Do you like watching cover videos of famous pop songs on YouTube?",
+    zh:"您喜欢在YouTube等平台上观看翻唱视频（如著名欧美流行曲）吗？",
+    ko:"YouTube 등에서 유명한 팝송 커버 영상을 보는 것을 좋아하나요?",
+    de:"Schauen Sie gerne YouTube-Cover-Videos bekannter Pop-Songs?",
+    fr:"Aimez-vous regarder des vidéos de reprises sur YouTube ?",
+    it:"Ti piace guardare video di cover su YouTube?"},
+  {"dim":"covers", id:'異色のジャンルの曲をア・カペラに再構築（例えばロックをジャズ風になど）しているとテンションが上がりますか？',
+    ja:"異色のジャンルの曲をア・カペラに再構築（例えばロックをジャズ風になど）しているとテンションが上がりますか？",
+    en:"Does it excite you when songs are heavily reimagined, like turning a rock song into a jazz cover?",
+    zh:"当您听到歌曲被颠覆性地重构（例如将摇滚曲目改编为爵士无伴奏合唱）时，会感到兴奋吗？",
+    ko:"이색적인 장르의 곡을 아카펠라로 재구성(예: 록을 재즈풍으로)한 것을 들으면 신나나요?",
+    de:"Mögen Sie es, wenn Songs stark umgewandelt werden, wie ein Rock-Lied als Jazz-Cover?",
+    fr:"Aimez-vous quand les chansons sont fortement réinventées (ex: rock en jazz a cappella) ?",
+    it:"Ti entusiasma quando le canzoni vengono re-inventate (es. rock in a cappella jazz)?"},
+  {"dim":"gospel", id:'ゴスペルやR&Bのような、感情に訴えかける魂の音楽が好きですか？',
+    ja:"ゴスペルやR&Bのような、感情に訴えかける魂の音楽が好きですか？",
+    en:"Do you enjoy soul-stirring gospel or R&B style music?",
+    zh:"您喜欢福音或R&B风格那种震撼心灵的音乐吗？",
+    ko:"복음이나 R&B 스타일의 영혼을 감동시키는 음악을 좋아하나요?",
+    de:"Mögen Sie mitreißende Gospel- oder R&B-Musik?",
+    fr:"Aimez-vous la musique gospel ou R&B qui touche l'âme ?",
+    it:"Ti piace la musica gospel o R&B che tocca l'anima?"},
+  {"dim":"gospel", id:'ソウルフルで太く、ブラックミュージック由来の深いフェイクやビブラートに魅了されますか？',
+    ja:"ソウルフルで太く、ブラックミュージック由来の深いフェイクやビブラートに魅了されますか？",
+    en:"Are you captivated by soulful, deep vocals, riffs, and runs typical of Black music origins?",
+    zh:"您是否被源自黑人音乐、深邃浑厚且充满转音与颤音的演唱所吸引？",
+    ko:"소울풀하고 묵직한, 블랙 뮤직에서 유래한 깊은 애드리브나 비브라토에 매료되나요?",
+    de:"Faszinieren Sie gefühlvolle, tiefe Vocals und Riffs aus der Black Music?",
+    fr:"Êtes-vous captivé par les voix soul et les envolées typiques de la musique noire ?",
+    it:"Sei catturato/a dalle voci soul e dai riff tipici della Black Music?"},
+  {"dim":"gospel", id:'神聖な賛美歌や、大きな教会で響くような精神性の高いコーラスを心地よく感じますか？',
+    ja:"神聖な賛美歌や、大きな教会で響くような精神性の高いコーラスを心地よく感じますか？",
+    en:"Do you find comfort in spiritual choruses, hymns, or sounds resembling grand churches?",
+    zh:"您是否对神圣的赞美诗，或者犹如回荡在宏伟教堂的高尚和声感到舒适？",
+    ko:"신성한 찬송가나 대성당에서 울려 퍼지는 듯한 영성 높은 코러스에서 편안함을 느끼나요?",
+    de:"Empfinden Sie spirituelle Chöre, Hymnen oder Kirchenklänge als beruhigend?",
+    fr:"Trouvez-vous du réconfort dans les chœurs spirituels, les hymnes ou le son des églises ?",
+    it:"Trovi conforto nei cori spirituali, inni o suoni simili a quelli delle chiese?"},
+  {"dim":"gospel", id:'リードボーカルの魂の叫びに対して、厚みのあるバックコーラスが掛け合うような展開が好きですか？',
+    ja:"リードボーカルの魂の叫びに対して、厚みのあるバックコーラスが掛け合うような展開が好きですか？",
+    en:"Do you like it when a thick backing choir does heavy call-and-response with a soul-shrieking lead vocal?",
+    zh:"您喜欢在主唱灵魂呐喊时，身后伴随着厚实的合唱团进行呼应交锋的情境吗？",
+    ko:"리드 보컬의 혼신을 다한 외침에 풍성한 백코러스가 화답하는 전개를 좋아하나요?",
+    de:"Mögen Sie Call-and-Response-Passagen zwischen einem starken Chor und dem Lead-Sänger?",
+    fr:"Aimez-vous quand un chœur puissant répond aux envolées du chanteur principal ?",
+    it:"Ti piace quando un potente coro risponde ai virtuosismi del cantante principale?"},
+  {"dim":"jazz", id:'ジャズのような洗練された即興感のある音楽が好きですか？',
+    ja:"ジャズのような洗練された即興感のある音楽が好きですか？",
+    en:"Do you enjoy sophisticated, improvisational jazz-style music?",
+    zh:"您喜欢爵士乐那种精致且富有即兴感的音乐吗？",
+    ko:"재즈처럼 세련되고 즉흥적인 음악을 좋아하나요?",
+    de:"Mögen Sie anspruchsvolle, improvisierte Jazzmusik?",
+    fr:"Aimez-vous la musique jazz sophistiquée et improvisée ?",
+    it:"Ti piace la musica jazz sofisticata e improvvisativa?"},
+  {"dim":"jazz", id:'スキャット（ダビドゥワといった無意味な音節での歌唱）や、管楽器のような声のソロフレーズが好きですか？',
+    ja:"スキャット（ダビドゥワといった無意味な音節での歌唱）や、管楽器のような声のソロフレーズが好きですか？",
+    en:"Do you like scat singing or vocal solos imitating brass instruments?",
+    zh:"您喜欢Scat拟声吟唱（如Doo-Wop等无意义音节演唱）或模仿管乐的人声独奏吗？",
+    ko:"스캣(다비두와 같은 무의미한 음절 가창)이나 관악기 같은 목소리 솔로를 좋아하나요?",
+    de:"Mögen Sie Scat-Gesang oder stimmliche Soli, die Blasinstrumente imitieren?",
+    fr:"Aimez-vous le scat ou les solos vocaux imitant les cuivres ?",
+    it:"Ti piace il canto scat o i soli vocali che imitano strumenti a fiato?"},
+  {"dim":"jazz", id:'4ビートのスウィング感や、大人の落ち着きを持ったラウンジミュージック風のア・カペラが好きですか？',
+    ja:"4ビートのスウィング感や、大人の落ち着きを持ったラウンジミュージック風のア・カペラが好きですか？",
+    en:"Do you enjoy the swing of 4-beat jazz or mature, lounge-style a cappella music?",
+    zh:"您喜欢4/4拍摇摆乐的律动，或是成熟稳重的Lounge风格无伴奏合唱吗？",
+    ko:"4비트의 스윙감이나 어른스럽고 차분한 라운지 바 느낌의 아카펠라를 선호하나요?",
+    de:"Mögen Sie den Swing von 4/4-Takt-Jazz oder ausgereifte Lounge-A-cappella-Musik?",
+    fr:"Appréciez-vous le swing du jazz à 4 temps ou l'a cappella style lounge ?",
+    it:"Apprezzi lo swing del jazz a 4 quarti o a cappella in stile lounge, maturo?"},
+  {"dim":"jazz", id:'ボサノヴァなどのラテンジャズや、お洒落なコード展開をする楽曲に魅力を感じますか？',
+    ja:"ボサノヴァなどのラテンジャズや、お洒落なコード展開をする楽曲に魅力を感じますか？",
+    en:"Are you charmed by latin jazz like Bossa Nova or songs with stylish chord progressions?",
+    zh:"您被Bossa Nova等拉丁爵士，或是有着时尚和弦走向的歌曲所吸引吗？",
+    ko:"보사노바 등 라틴 재즈나, 세련된 코드 전개를 보여주는 곡에 매력을 느끼나요?",
+    de:"Können Sie sich für Latin-Jazz wie Bossa Nova oder stilvolle Akkordwechsel begeistern?",
+    fr:"Êtes-vous charmé par le jazz latin comme la Bossa Nova ou les accords élégants ?",
+    it:"Sei affascinato/a dal jazz latino come la Bossa Nova o da accordi eleganti?"},
+];
+ 
+// ─────────────────────────────────────────────
+// GROUP DATA
+// Profile dims: harmony tempo modern size energy japanese beatbox upbeat covers gospel jazz
+// size: 1=large, 10=small (reversed for display)
+// ─────────────────────────────────────────────
+const GROUPS = [
+  {
+    name:"Pentatonix",
+    origin:"🇺🇸 USA",
+    tags:["Pop","Contemporary","Beatbox"],
+    desc:{
+      ja:"世界的に有名な5人組ア・カペラグループ。ビートボックス×現代ポップで爆発的なエネルギーを誇る。",
+      en:"World-famous 5-piece a cappella group. Explosive energy combining beatbox and contemporary pop.",
+      zh:"世界著名的五人无伴奏合唱组合，融合Beatbox与现代流行乐，能量十足。",
+      ko:"세계적으로 유명한 5인조 아카펠라 그룹. 비트박스와 현대 팝을 결합한 폭발적 에너지.",
+      de:"Weltberühmte 5-köpfige A-cappella-Gruppe. Explosive Energie mit Beatbox und modernem Pop.",
+      fr:"Groupe a cappella mondialement connu. Énergie explosive avec beatbox et pop contemporain.",
+      it:"Gruppo a cappella di fama mondiale. Energia esplosiva con beatbox e pop contemporaneo.",
+    },
+    profile:{harmony:7,tempo:7,modern:9,size:9,energy:8,japanese:1,beatbox:9,upbeat:7,covers:9,gospel:4,jazz:2},
+    songs:[
+      {name:"Daft Punk",yt:"Pentatonix Daft Punk"},
+      {name:"Hallelujah",yt:"Pentatonix Hallelujah"},
+      {name:"Evolution of Music",yt:"Pentatonix Evolution of Music"},
+    ]
+  },
+  {
+    name:"Straight No Chaser",
+    origin:"🇺🇸 USA",
+    tags:["Comedy","Pop","Choir"],
+    desc:{
+      ja:"インディアナ大学出身の10人組。ユーモアと歌の上手さを兼ね備えた、聴いていて笑顔になれるグループ。",
+      en:"10-member group from Indiana University. Hilarious and talented — their performances always bring a smile.",
+      zh:"来自印第安纳大学的10人组合，幽默与歌唱实力并存，每场演出都让人忍俊不禁。",
+      ko:"인디애나 대학 출신 10인조. 유머와 가창력을 겸비한 그룹으로 항상 미소를 짓게 만든다.",
+      de:"10-köpfige Gruppe aus der Indiana University. Humorvoll und talentiert – Performances zum Lächeln.",
+      fr:"Groupe de 10 membres de l'Université d'Indiana. Humoristique et talentueux.",
+      it:"Gruppo di 10 membri dell'Indiana University. Umoristico e talentuoso.",
+    },
+    profile:{harmony:5,tempo:6,modern:7,size:2,energy:7,japanese:1,beatbox:2,upbeat:9,covers:8,gospel:2,jazz:3},
+    songs:[
+      {name:"The 12 Days of Christmas",yt:"Straight No Chaser 12 Days of Christmas"},
+      {name:"Africa",yt:"Straight No Chaser Africa"},
+      {name:"I'm Yours / Somewhere Over the Rainbow",yt:"Straight No Chaser I'm Yours"},
+    ]
+  },
+  {
+    name:"The Real Group",
+    origin:"🇸🇪 Sweden",
+    tags:["Jazz","Contemporary","Complex"],
+    desc:{
+      ja:"スウェーデン発の5人組。洗練されたジャズ・ハーモニーとスキャットで世界のア・カペラシーンを牽引する。",
+      en:"Swedish 5-piece pioneers of jazz a cappella. Sophisticated harmonies and scat singing at its finest.",
+      zh:"瑞典五人组，爵士无伴奏合唱的先驱，精致的和声与即兴演唱令人叹为观止。",
+      ko:"스웨덴 출신 5인조. 세련된 재즈 하모니와 스캣으로 세계 아카펠라 씬을 이끌어 왔다.",
+      de:"Schwedisches 5-köpfiges Quartett. Pioniere des Jazz-A-cappella mit raffinierten Harmonien.",
+      fr:"Groupe suédois de 5 membres. Pionniers du jazz a cappella avec des harmonies raffinées.",
+      it:"Gruppo svedese di 5 membri. Pionieri del jazz a cappella con armonie raffinate.",
+    },
+    profile:{harmony:9,tempo:6,modern:6,size:9,energy:5,japanese:1,beatbox:1,upbeat:6,covers:5,gospel:1,jazz:9},
+    songs:[
+      {name:"Yeke Yeke",yt:"The Real Group Yeke Yeke"},
+      {name:"Chameleon",yt:"The Real Group Chameleon"},
+      {name:"Nothing Else Matters",yt:"The Real Group Nothing Else Matters"},
+    ]
+  },
+  {
+    name:"Take 6",
+    origin:"🇺🇸 USA",
+    tags:["Gospel","R&B","Jazz","Complex"],
+    desc:{
+      ja:"グラミー賞10回受賞の6人組。ゴスペル×ジャズ×R&Bを融合させた究極のハーモニーが持ち味。",
+      en:"10x Grammy winners. A perfect fusion of gospel, jazz, and R&B with extraordinary harmonies.",
+      zh:"格莱美奖10次得主，融合福音、爵士与R&B，缔造极致和声。",
+      ko:"그래미상 10회 수상. 가스펠, 재즈, R&B를 융합한 최고의 화음이 매력.",
+      de:"10-fache Grammy-Gewinner. Perfekte Verschmelzung von Gospel, Jazz und R&B.",
+      fr:"Vainqueurs 10 fois aux Grammy. Fusion parfaite de gospel, jazz et R&B.",
+      it:"Vincitori 10 volte ai Grammy. Perfetta fusione di gospel, jazz e R&B.",
+    },
+    profile:{harmony:10,tempo:5,modern:6,size:8,energy:6,japanese:1,beatbox:4,upbeat:6,covers:4,gospel:10,jazz:7},
+    songs:[
+      {name:"A Quiet Place",yt:"Take 6 A Quiet Place"},
+      {name:"Biggest Part of Me",yt:"Take 6 Biggest Part of Me"},
+      {name:"Mary",yt:"Take 6 Mary"},
+    ]
+  },
+  {
+    name:"The Swingle Singers",
+    origin:"🇬🇧 UK",
+    tags:["Classical","Jazz","Contemporary"],
+    desc:{
+      ja:"1963年創設のロンドン拠点の8人組。クラシックをア・カペラでスウィングするパイオニア。",
+      en:"London-based 8-piece founded in 1963. Pioneers of swinging classical music a cappella.",
+      zh:"1963年成立的伦敦八人组，无伴奏演绎摇摆古典音乐的先驱。",
+      ko:"1963년 창설된 런던 8인조. 클래식 음악을 스윙으로 연주하는 아카펠라의 선구자.",
+      de:"Londoner 8-köpfige Gruppe, gegründet 1963. Pioniere des Swing-A-cappella mit klassischer Musik.",
+      fr:"Groupe londonien de 8 membres fondé en 1963. Pionniers du swing classique a cappella.",
+      it:"Gruppo londinese di 8 membri fondato nel 1963. Pionieri dello swing classico a cappella.",
+    },
+    profile:{harmony:10,tempo:5,modern:3,size:3,energy:4,japanese:1,beatbox:1,upbeat:5,covers:8,gospel:1,jazz:5},
+    songs:[
+      {name:"Bohemian Rhapsody",yt:"Swingle Singers Bohemian Rhapsody"},
+      {name:"Air on the G String (Bach)",yt:"Swingle Singers Air G String"},
+      {name:"Clair de Lune",yt:"Swingle Singers Clair de Lune"},
+    ]
+  },
+  {
+    name:"King's Singers",
+    origin:"🇬🇧 UK",
+    tags:["Classical","Renaissance","Choral"],
+    desc:{
+      ja:"1968年ケンブリッジ大学発の6人組。中世からポップまで幅広いレパートリーを誇る世界最高峰ア・カペラ。",
+      en:"Founded at Cambridge in 1968. Spanning medieval to pop, the world's premier a cappella ensemble.",
+      zh:"1968年剑桥大学创立的六人组，曲目横跨中世纪至流行乐，世界顶级无伴奏合唱。",
+      ko:"1968년 케임브리지 설립 6인조. 중세부터 팝까지 폭넓은 레퍼토리, 세계 최고 수준.",
+      de:"1968 in Cambridge gegründete 6-köpfige Gruppe. Weltklasse-A-cappella von Mittelalter bis Pop.",
+      fr:"Fondé à Cambridge en 1968. A cappella de classe mondiale du Moyen Âge au pop.",
+      it:"Fondato a Cambridge nel 1968. A cappella di livello mondiale dal Medioevo al pop.",
+    },
+    profile:{harmony:9,tempo:4,modern:2,size:8,energy:3,japanese:1,beatbox:1,upbeat:5,covers:6,gospel:2,jazz:2},
+    songs:[
+      {name:"Good Vibrations",yt:"Kings Singers Good Vibrations"},
+      {name:"And So It Goes",yt:"Kings Singers And So It Goes"},
+      {name:"White Christmas",yt:"Kings Singers White Christmas"},
+    ]
+  },
+  {
+    name:"Naturally 7",
+    origin:"🇺🇸 USA",
+    tags:["R&B","Soul","Beatbox","Vocal Play"],
+    desc:{
+      ja:"「ボーカルプレイ」を極めた7人組。全ての楽器を声で再現し、バンドそのものをア・カペラで体現する。",
+      en:"7-piece masters of \"vocal play\". They recreate every instrument with just their voices — a full band in a cappella.",
+      zh:"7人组「声乐演奏」大师，用声音重现所有乐器，以无伴奏合唱形式演绎完整乐队。",
+      ko:"'보컬 플레이'를 극한까지 추구한 7인조. 모든 악기를 목소리로 재현하며 밴드 자체를 구현한다.",
+      de:"7-köpfige Meister des \"Vocal Play\". Jedes Instrument wird mit der Stimme nachgeahmt.",
+      fr:"7 maîtres du \"vocal play\". Ils recréent chaque instrument avec leurs voix.",
+      it:"7 maestri del \"vocal play\". Ricreano ogni strumento con le loro voci.",
+    },
+    profile:{harmony:8,tempo:7,modern:8,size:7,energy:8,japanese:1,beatbox:10,upbeat:7,covers:7,gospel:7,jazz:4},
+    songs:[
+      {name:"Feel It (In The Air Tonight)",yt:"Naturally 7 Feel It"},
+      {name:"Fly Me To The Moon",yt:"Naturally 7 Fly Me To The Moon"},
+      {name:"Superhuman",yt:"Naturally 7 Superhuman"},
+    ]
+  },
+  {
+    name:"Home Free",
+    origin:"🇺🇸 USA",
+    tags:["Country","Pop","Covers"],
+    desc:{
+      ja:"カントリー×ポップで人気の5人組。透明感ある和声と、男性低音ボイスが特徴的。",
+      en:"Country-pop a cappella 5-piece known for clear harmonies and a distinctive deep bass voice.",
+      zh:"融合乡村与流行的五人组，以清澈和声和低音嗓音著称。",
+      ko:"컨트리×팝 아카펠라 5인조. 맑은 화음과 특색 있는 저음 베이스 보컬이 매력.",
+      de:"Country-Pop-A-cappella-Quintett mit klaren Harmonien und einer markanten Bassstimme.",
+      fr:"Quintet a cappella country-pop avec des harmonies claires et une voix de basse distinctive.",
+      it:"Quintetto a cappella country-pop con armonie chiare e una caratteristica voce di basso.",
+    },
+    profile:{harmony:6,tempo:6,modern:7,size:9,energy:6,japanese:1,beatbox:3,upbeat:7,covers:8,gospel:3,jazz:2},
+    songs:[
+      {name:"Ring of Fire",yt:"Home Free Ring of Fire"},
+      {name:"Can't Stop The Feeling",yt:"Home Free Can't Stop The Feeling"},
+      {name:"Man of Constant Sorrow",yt:"Home Free Man of Constant Sorrow"},
+    ]
+  },
+  {
+    name:"Voctave",
+    origin:"🇺🇸 USA",
+    tags:["Pop","Gospel","Disney"],
+    desc:{
+      ja:"ディズニーやクリスチャン曲のカバーで知名度を高めた11人組。美しく磨かれたハーモニーが魅力。",
+      en:"11-member group known for stunning Disney and Christian music covers. Beautifully polished harmonies.",
+      zh:"以迪士尼和基督教音乐翻唱闻名的11人组，和声优美而精致。",
+      ko:"디즈니, 기독교 음악 커버로 유명한 11인조. 아름답고 세련된 하모니가 매력.",
+      de:"11-köpfige Gruppe bekannt für Disney- und christliche Musikcover. Wunderschön polierte Harmonien.",
+      fr:"Groupe de 11 membres connu pour des reprises Disney et chrétiennes. Harmonies magnifiquement travaillées.",
+      it:"Gruppo di 11 membri noto per cover Disney e musica cristiana. Armonie splendidamente raffinate.",
+    },
+    profile:{harmony:7,tempo:5,modern:7,size:3,energy:5,japanese:1,beatbox:2,upbeat:6,covers:8,gospel:6,jazz:2},
+    songs:[
+      {name:"A Million Dreams",yt:"Voctave A Million Dreams"},
+      {name:"River of Dreams",yt:"Voctave River of Dreams"},
+      {name:"Hallelujah",yt:"Voctave Hallelujah"},
+    ]
+  },
+  {
+    name:"Perpetuum Jazzile",
+    origin:"🇸🇮 Slovenia",
+    tags:["Jazz","Pop","Big Ensemble"],
+    desc:{
+      ja:"スロベニア発の大型ア・カペラグループ。雷雨効果音で始まる「Africa」のカバーが世界的に話題に。",
+      en:"Large Slovenian a cappella group. Their viral cover of 'Africa' — complete with vocal thunderstorm effects — captivated the world.",
+      zh:"斯洛文尼亚大型无伴奏合唱团，以用人声模拟雷雨效果演绎「Africa」而风靡全球。",
+      ko:"슬로베니아 대형 아카펠라 그룹. 천둥 효과를 목소리로 재현한 'Africa' 커버가 세계적으로 화제.",
+      de:"Große slowenische A-cappella-Gruppe. Ihr virales Cover von 'Africa' mit stimmlichen Gewittereffekten.",
+      fr:"Grand groupe a cappella slovène. Leur reprise virale d'Africa avec des effets d'orage vocaux.",
+      it:"Grande gruppo a cappella sloveno. La loro cover virale di Africa con effetti di temporale vocali.",
+    },
+    profile:{harmony:8,tempo:7,modern:7,size:1,energy:8,japanese:1,beatbox:4,upbeat:7,covers:7,gospel:3,jazz:7},
+    songs:[
+      {name:"Africa",yt:"Perpetuum Jazzile Africa"},
+      {name:"Bohemian Rhapsody",yt:"Perpetuum Jazzile Bohemian Rhapsody"},
+      {name:"What A Feeling",yt:"Perpetuum Jazzile What A Feeling"},
+    ]
+  },
+  {
+    name:"Ladysmith Black Mambazo",
+    origin:"🇿🇦 South Africa",
+    tags:["Isicathamiya","African","Traditional"],
+    desc:{
+      ja:"南アフリカのズールー族の伝統的なア・カペラ「イシカタミヤ」を世界に広めた11人組。",
+      en:"11-piece South African group that brought the Zulu a cappella tradition 'Isicathamiya' to the world.",
+      zh:"南非祖鲁族11人组，将祖鲁无伴奏合唱传统「Isicathamiya」带向世界。",
+      ko:"줄루족 전통 아카펠라 '이시카타미야'를 세계에 알린 남아프리카 11인조.",
+      de:"Südafrikanische 11-köpfige Gruppe, die die Zulu-A-cappella-Tradition 'Isicathamiya' in die Welt trug.",
+      fr:"Groupe sud-africain de 11 membres qui a fait connaître la tradition zoulou a cappella 'Isicathamiya'.",
+      it:"Gruppo sudafricano di 11 membri che ha portato al mondo la tradizione zulu a cappella 'Isicathamiya'.",
+    },
+    profile:{harmony:7,tempo:4,modern:3,size:2,energy:5,japanese:1,beatbox:1,upbeat:6,covers:2,gospel:6,jazz:1},
+    songs:[
+      {name:"Homeless",yt:"Ladysmith Black Mambazo Homeless"},
+      {name:"Inkanyezi Nezazi",yt:"Ladysmith Black Mambazo Inkanyezi"},
+      {name:"Hello My Baby",yt:"Ladysmith Black Mambazo Hello My Baby"},
+    ]
+  },
+  {
+    name:"VoicePlay",
+    origin:"🇺🇸 USA",
+    tags:["Pop","Disney","Theatrical","Covers"],
+    desc:{
+      ja:"高いエンターテインメント性で人気の5人組。映画・ゲーム・アニメのテーマ曲カバーが得意。",
+      en:"Highly entertaining 5-piece group. Specializes in covers of movie, game, and anime theme songs.",
+      zh:"娱乐性极强的五人组，擅长翻唱电影、游戏与动漫主题曲。",
+      ko:"엔터테인먼트성이 높은 5인조. 영화, 게임, 애니메이션 주제가 커버를 특기로 한다.",
+      de:"Sehr unterhaltsames 5-köpfiges Quintett. Spezialisiert auf Filmmusik-, Spiel- und Anime-Covers.",
+      fr:"Quintette très divertissant spécialisé dans les reprises de films, jeux et animes.",
+      it:"Quintetto molto divertente specializzato in cover di film, giochi e anime.",
+    },
+    profile:{harmony:6,tempo:7,modern:8,size:9,energy:8,japanese:1,beatbox:5,upbeat:8,covers:9,gospel:3,jazz:2},
+    songs:[
+      {name:"Circle of Life",yt:"VoicePlay Circle of Life"},
+      {name:"Game of Thrones",yt:"VoicePlay Game of Thrones"},
+      {name:"Can You Feel the Love Tonight",yt:"VoicePlay Can You Feel the Love Tonight"},
+    ]
+  },
+  {
+    name:"The Manhattan Transfer",
+    origin:"🇺🇸 USA",
+    tags:["Jazz","Swing","Vocal Group"],
+    desc:{
+      ja:"1969年結成のジャズ・ボーカルの金字塔。グラミー7回受賞、ジャズとポップを行き来する表現の幅が魅力。",
+      en:"Jazz vocal legends founded in 1969. 7 Grammy wins, moving fluidly between jazz and pop.",
+      zh:"1969年成立的爵士人声标杆，七度格莱美得主，游走于爵士与流行之间。",
+      ko:"1969년 결성된 재즈 보컬의 금자탑. 그래미 7회 수상, 재즈와 팝을 자유롭게 오간다.",
+      de:"Jazz-Vokal-Legenden gegründet 1969. 7 Grammy-Auszeichnungen, fließend zwischen Jazz und Pop.",
+      fr:"Légendes du jazz vocal fondées en 1969. 7 Grammys, entre jazz et pop.",
+      it:"Leggende del jazz vocale fondate nel 1969. 7 Grammy, tra jazz e pop.",
+    },
+    profile:{harmony:9,tempo:6,modern:5,size:9,energy:6,japanese:1,beatbox:1,upbeat:7,covers:6,gospel:3,jazz:9},
+    songs:[
+      {name:"Birdland",yt:"Manhattan Transfer Birdland"},
+      {name:"The Boy from New York City",yt:"Manhattan Transfer Boy from New York City"},
+      {name:"Operator",yt:"Manhattan Transfer Operator"},
+    ]
+  },
+  {
+    name:"The Idea of North",
+    origin:"🇦🇺 Australia",
+    tags:["Jazz","Contemporary","Sophisticated"],
+    desc:{
+      ja:"オーストラリア発の4人組。上質なジャズ×クロスオーバーで高い評価を受ける、玄人好みのグループ。",
+      en:"Australian 4-piece known for sophisticated jazz crossover. A connoisseur's favourite.",
+      zh:"澳大利亚四人组，以精致的爵士跨界风格备受赞誉，是行家的挚爱。",
+      ko:"호주 4인조. 고품질 재즈 크로스오버로 높은 평가를 받는 감식안 있는 이들의 그룹.",
+      de:"Australisches Quartett bekannt für anspruchsvollen Jazz-Crossover. Ein Favorit der Kenner.",
+      fr:"Quatuor australien connu pour son jazz sophistiqué. Le favori des connaisseurs.",
+      it:"Quartetto australiano noto per il jazz sofisticato. Il preferito degli intenditori.",
+    },
+    profile:{harmony:9,tempo:5,modern:6,size:9,energy:5,japanese:1,beatbox:2,upbeat:5,covers:5,gospel:4,jazz:9},
+    songs:[
+      {name:"This Is Me",yt:"Idea of North This Is Me"},
+      {name:"Blackbird",yt:"Idea of North Blackbird"},
+      {name:"No Moon At All",yt:"Idea of North No Moon At All"},
+    ]
+  },
+  {
+    name:"ゴスペラーズ",
+    origin:"🇯🇵 Japan",
+    tags:["J-Pop","R&B","Gospel"],
+    desc:{
+      ja:"1991年結成の日本を代表するア・カペラグループ。深みのあるR&B×ゴスペルサウンドで不動の人気を誇る。",
+      en:"Japan's most iconic a cappella group, formed in 1991. Deep R&B and gospel sounds with enduring popularity.",
+      zh:"1991年成立的日本代表性无伴奏合唱团，深厚的R&B与福音音色享有持久人气。",
+      ko:"1991년 결성된 일본을 대표하는 아카펠라 그룹. 깊이 있는 R&B×가스펠 사운드로 부동의 인기.",
+      de:"Japans bekannteste A-cappella-Gruppe, gegründet 1991. Tiefe R&B- und Gospel-Klänge.",
+      fr:"Le groupe a cappella le plus emblématique du Japon, fondé en 1991. Sons R&B et gospel profonds.",
+      it:"Il gruppo a cappella più iconico del Giappone, fondato nel 1991. Suoni R&B e gospel profondi.",
+    },
+    profile:{harmony:8,tempo:6,modern:7,size:9,energy:6,japanese:10,beatbox:2,upbeat:6,covers:4,gospel:7,jazz:3},
+    songs:[
+      {name:"永遠に (Eien ni)",yt:"ゴスペラーズ 永遠に"},
+      {name:"ミモザ (Mimosa)",yt:"ゴスペラーズ ミモザ"},
+      {name:"星屑の街 (Hoshikuzu no Machi)",yt:"ゴスペラーズ 星屑の街"},
+    ]
+  },
+  {
+    name:"RAG FAIR",
+    origin:"🇯🇵 Japan",
+    tags:["J-Pop","Beatbox","Energetic"],
+    desc:{
+      ja:"2000年代に大ブレイクした6人組。人声楽器「ボイスパーカッション」を取り入れた軽快なポップが持ち味。",
+      en:"6-piece that broke through in the 2000s. Known for lively pop incorporating vocal percussion.",
+      zh:"2000年代大红的六人组，以融入人声打击乐的轻快流行乐著称。",
+      ko:"2000년대 대히트한 6인조. 보이스 퍼커션을 접목한 경쾌한 팝이 특기.",
+      de:"6-köpfige Gruppe mit Durchbruch in den 2000ern. Bekannt für lebhaften Pop mit Vokal-Perkussion.",
+      fr:"Groupe de 6 membres percé dans les années 2000. Pop entraînant avec percussion vocale.",
+      it:"Gruppo di 6 membri esploso negli anni 2000. Pop vivace con percussione vocale.",
+    },
+    profile:{harmony:6,tempo:7,modern:8,size:7,energy:7,japanese:10,beatbox:7,upbeat:8,covers:7,gospel:2,jazz:2},
+    songs:[
+      {name:"恋人 (Koibito)",yt:"RAG FAIR 恋人"},
+      {name:"あなたと (Anata to)",yt:"RAG FAIR あなたと"},
+      {name:"大好きだよ (Daisuki da yo)",yt:"RAG FAIR 大好きだよ"},
+    ]
+  },
+  {
+    name:"Little Glee Monster",
+    origin:"🇯🇵 Japan",
+    tags:["J-Pop","Powerful","Youth"],
+    desc:{
+      ja:"2013年デビューの女性6人組。力強いソプラノ×緻密なハーモニーで若い世代を中心に幅広く支持される。",
+      en:"Female 6-piece debuted in 2013. Powerful soprano voices and precise harmonies loved across generations.",
+      zh:"2013年出道的女子六人组，以有力的女高音与精密和声深受各年龄层喜爱。",
+      ko:"2013년 데뷔한 여성 6인조. 강렬한 소프라노와 정교한 하모니로 폭넓은 지지를 받는다.",
+      de:"Weibliches 6-köpfiges Sextett mit Debüt 2013. Kraftvolle Sopranos und präzise Harmonien.",
+      fr:"Sextette féminin débuté en 2013. Sopranos puissantes et harmonies précises.",
+      it:"Sestetto femminile debuttato nel 2013. Soprani potenti e armonie precise.",
+    },
+    profile:{harmony:6,tempo:7,modern:9,size:8,energy:7,japanese:9,beatbox:2,upbeat:8,covers:6,gospel:3,jazz:1},
+    songs:[
+      {name:"Juice",yt:"Little Glee Monster Juice"},
+      {name:"私らしく生きてみたい (Watashi rashiku)",yt:"Little Glee Monster 私らしく"},
+      {name:"好きだ。(Sukida.)",yt:"Little Glee Monster 好きだ"},
+    ]
+  },
+  {
+    name:"BON'Z",
+    origin:"🇯🇵 Japan",
+    tags:["J-Pop","Smooth","Male Vocal"],
+    desc:{
+      ja:"2003年結成の男性5人組。やわらかいファルセットと心地よいハーモニーが、聴く人の心を和ませる。",
+      en:"Male 5-piece formed in 2003. Soft falsetto and soothing harmonies that warm the heart.",
+      zh:"2003年成立的男子五人组，柔和的假声与舒适和声令人心旷神怡。",
+      ko:"2003년 결성된 남성 5인조. 부드러운 팔세토와 편안한 하모니가 듣는 이의 마음을 녹인다.",
+      de:"Männliches Quintett gegründet 2003. Weiches Falsett und beruhigende Harmonien.",
+      fr:"Quintette masculin fondé en 2003. Doux fausset et harmonies apaisantes.",
+      it:"Quintetto maschile fondato nel 2003. Morbido falsetto e armonie rassicuranti.",
+    },
+    profile:{harmony:7,tempo:5,modern:7,size:9,energy:5,japanese:10,beatbox:3,upbeat:5,covers:5,gospel:4,jazz:2},
+    songs:[
+      {name:"ありがとう (Arigatou)",yt:"BON'Z ありがとう"},
+      {name:"月光 (Gekkō)",yt:"BON'Z 月光"},
+      {name:"Forever Love",yt:"BON'Z Forever Love"},
+    ]
+  },
+  {
+    name:"Committed",
+    origin:"🇺🇸 USA",
+    tags:["Gospel","R&B","Christian"],
+    desc:{
+      ja:"クリスチャン・ア・カペラの実力派5人組。NBC『The Sing Off』Season 2優勝で一躍有名に。",
+      en:"Powerhouse Christian a cappella 5-piece. Rose to fame after winning NBC's 'The Sing Off' Season 2.",
+      zh:"实力派基督教无伴奏合唱五人组，因赢得NBC《The Sing Off》第2季而一举成名。",
+      ko:"크리스천 아카펠라의 실력파 5인조. NBC 'The Sing Off' 시즌2 우승으로 일약 유명해졌다.",
+      de:"Starkes christliches A-cappella-Quintett. Bekannt nach dem Sieg bei NBC's 'The Sing Off' Staffel 2.",
+      fr:"Puissant quintette a cappella chrétien. Connu après la victoire à 'The Sing Off' saison 2 sur NBC.",
+      it:"Potente quintetto a cappella cristiano. Famoso dopo la vittoria a 'The Sing Off' stagione 2 su NBC.",
+    },
+    profile:{harmony:8,tempo:6,modern:7,size:9,energy:7,japanese:1,beatbox:4,upbeat:8,covers:5,gospel:9,jazz:4},
+    songs:[
+      {name:"Never Gonna Break",yt:"Committed Never Gonna Break"},
+      {name:"When I Bow",yt:"Committed When I Bow"},
+      {name:"Stay With Me",yt:"Committed Stay With Me"},
+    ]
+  },,
+{
+    name:"Rockapella", origin:"🇺🇸 USA", tags:["Pop","Rock","A Cappella Pioneers"],
+    desc:{
+      ja:"90年代に一世を風靡したアメリカのア・カペラパイオニア。力強いボーカルとビートが見事。",
+      en:"American a cappella pioneers who burst onto the scene in the 90s. Known for strong vocals and beats.",
+      zh:"90年代风靡美国的无伴奏合唱先驱。以强有力的嗓音和节拍闻名。",
+      ko:"90년대 미국을 풍미한 아카펠라의 선구자. 강력한 보컬과 비트가 압권.",
+      de:"Amerikanische A-cappella-Pioniere der 90er. Bekannt für starke Vocals und Beats.",
+      fr:"Pionniers a cappella américains des années 90. Connus pour leurs voix fortes et leurs rythmes.",
+      it:"Pionieri a cappella americani degli anni '90. Noti per voci forti e ritmi.",
+    },
+    profile:{harmony:6,tempo:8,modern:6,size:8,energy:8,japanese:1,beatbox:8,upbeat:9,covers:8,gospel:4,jazz:3},
+    songs:[{name:"Where In The World Is Carmen Sandiego?",yt:"Rockapella Carmen Sandiego"},{name:"Stand By Me",yt:"Rockapella Stand By Me"},{name:"Pretty Woman",yt:"Rockapella Pretty Woman"}]
+  },
+  {
+    name:"m-pact", origin:"🇺🇸 USA", tags:["Jazz","Pop","Smooth"],
+    desc:{
+      ja:"LAを拠点とする男性ボーカルバンド。洗練されたジャズハーモニーとポップの融合が美しい。",
+      en:"LA-based all-male vocal band. A beautiful fusion of sophisticated jazz harmonies and pop.",
+      zh:"驻扎洛杉矶的男子人声乐团。精致爵士和声与流行的完美融合。",
+      ko:"LA 기반 남성 보컬 밴드. 세련된 재즈 하모니와 팝의 융합이 아름답다.",
+      de:"Männliche Vokalband aus LA. Wunderschöne Fusion aus raffiniertem Jazz und Pop.",
+      fr:"Groupe vocal de LA. Belle fusion d'harmonies jazz sophistiquées et de pop.",
+      it:"Gruppo vocale di LA. Splendida fusione di armonie jazz sofisticate e pop.",
+    },
+    profile:{harmony:9,tempo:5,modern:6,size:8,energy:5,japanese:1,beatbox:4,upbeat:6,covers:7,gospel:3,jazz:9},
+    songs:[{name:"My Favorite Things",yt:"m-pact My Favorite Things"},{name:"Signed, Sealed, Delivered",yt:"m-pact Signed Sealed Delivered"},{name:"Imagine",yt:"m-pact Imagine"}]
+  },
+  {
+    name:"The House Jacks", origin:"🇺🇸 USA", tags:["Rock","Band","Originals"],
+    desc:{
+      ja:"「声のロックバンド」として知られる草分け的存在。楽器を一切使わない強烈なロックサウンド。",
+      en:"Known as the original 'vocal rock band'. Intense rock sounds without any instruments.",
+      zh:"被誉为“人声摇滚乐队”的先驱。无需乐器便能发出强烈的摇滚音效。",
+      ko:"'보컬 록 밴드'로 알려진 선구자적 그룹. 악기 없이 강렬한 록 사운드를 낸다.",
+      de:"Bekannt als die erste 'Vokal-Rockband'. Intensive Rockklänge ganz ohne Instrumente.",
+      fr:"Connus comme le premier 'groupe de rock vocal'. Sons rock intenses sans instruments.",
+      it:"Noti come la prima 'vocal rock band'. Sonorità rock intense senza strumenti.",
+    },
+    profile:{harmony:5,tempo:9,modern:7,size:8,energy:10,japanese:1,beatbox:9,upbeat:8,covers:5,gospel:2,jazz:1},
+    songs:[{name:"Naked",yt:"The House Jacks Naked"},{name:"Get Down Tonight",yt:"The House Jacks Get Down Tonight"},{name:"Red Dress",yt:"The House Jacks Red Dress"}]
+  },
+  {
+    name:"The Nylons", origin:"🇨🇦 Canada", tags:["Pop","Doo Wop","Upbeat"],
+    desc:{
+      ja:"カナダの伝説的4人組。80年代から活躍し、ドゥーワップを取り入れた明るいポップが特徴。",
+      en:"Legendary Canadian 4-piece active since the 80s. Known for upbeat pop with doo-wop influences.",
+      zh:"自80年代起活跃的加拿大传奇四人组。以融入Doo-Wop的欢快流行乐著称。",
+      ko:"80년대부터 활약한 캐나다의 전설적인 4인조. 두왑을 접목한 밝은 팝이 특징.",
+      de:"Legendäres kanadisches Quartett seit den 80ern. Bekannt für fröhlichen Pop mit Doo-Wop.",
+      fr:"Quatuor canadien légendaire actif depuis les années 80. Pop joyeuse avec du doo-wop.",
+      it:"Leggendario quartetto canadese attivo dagli anni '80. Pop allegro con influenze doo-wop.",
+    },
+    profile:{harmony:7,tempo:7,modern:4,size:9,energy:7,japanese:1,beatbox:3,upbeat:9,covers:8,gospel:3,jazz:4},
+    songs:[{name:"The Lion Sleeps Tonight",yt:"The Nylons Lion Sleeps Tonight"},{name:"Kiss Him Goodbye",yt:"The Nylons Kiss Him Goodbye"},{name:"Happy Together",yt:"The Nylons Happy Together"}]
+  },
+  {
+    name:"Rajaton", origin:"🇫🇮 Finland", tags:["Choral","Folk","Pop"],
+    desc:{
+      ja:"フィンランドを代表する6人組。クラシックや北欧民謡からポップスまで、圧倒的な世界観を持つ。",
+      en:"Leading 6-piece from Finland. Breathtaking performances spanning classical, Nordic folk, and pop.",
+      zh:"芬兰代表性六人组。作品涵盖古典、北欧民谣到流行，极具震撼力。",
+      ko:"핀란드를 대표하는 6인조. 클래식과 북유럽 민요부터 팝까지 압도적인 세계관을 지님.",
+      de:"Führendes Sextett aus Finnland. Atemberaubend von Klassik und Nordic Folk bis Pop.",
+      fr:"Sextette finlandais de premier plan. De la musique classique au folk nordique et à la pop.",
+      it:"Sestetto di spicco dalla Finlandia. Dalla musica classica al folk nordico e al pop.",
+    },
+    profile:{harmony:9,tempo:4,modern:5,size:8,energy:5,japanese:1,beatbox:1,upbeat:4,covers:5,gospel:1,jazz:3},
+    songs:[{name:"Butterfly",yt:"Rajaton Butterfly"},{name:"Dobbin's Flowery Vale",yt:"Rajaton Dobbins Flowery Vale"},{name:"Mitä kaikatat, kivonen?",yt:"Rajaton Mita kaikatat"}]
+  },
+  {
+    name:"Club for Five", origin:"🇫🇮 Finland", tags:["Jazz","Pop","Creative"],
+    desc:{
+      ja:"フィンランドの5人組。インストゥルメンタルに近い精密な声のコントロールでジャズやポップスを熱唱。",
+      en:"Finnish 5-piece. They sing jazz and pop with precise vocal control resembling instruments.",
+      zh:"芬兰五人组。他们以堪比乐器的精准人声控制演唱爵士和流行乐。",
+      ko:"핀란드의 5인조. 악기에 가까운 정밀한 목소리 컨트롤로 재즈와 팝을 열창한다.",
+      de:"Finnisches Quintett. Singt Jazz und Pop mit präziser, fast instrumentaler Stimmkontrolle.",
+      fr:"Quintette finlandais. Chante jazz et pop avec un contrôle vocal quasi instrumental.",
+      it:"Quintetto finlandese. Canta jazz e pop con controllo vocale quasi strumentale.",
+    },
+    profile:{harmony:9,tempo:6,modern:6,size:8,energy:6,japanese:1,beatbox:4,upbeat:6,covers:6,gospel:2,jazz:8},
+    songs:[{name:"Brothers in Arms",yt:"Club for Five Brothers in Arms"},{name:"Sweet Dreams",yt:"Club for Five Sweet Dreams"},{name:"Joka Poika",yt:"Club for Five Joka Poika"}]
+  },
+  {
+    name:"Voca People", origin:"🇮🇱 Israel", tags:["Comedy","Theatrical","Aliens"],
+    desc:{
+      ja:"全身白塗りの「宇宙人」をコンセプトにした異色のグループ。圧倒的なビートボックスと笑いで会場を沸かせる。",
+      en:"Unique 'alien' concept group completely in white. They rock arenas with beatbox and comedy.",
+      zh:"以“外星人”为概念的全白造型异类组合。凭借顶尖Beatbox与喜剧元素燃爆全场。",
+      ko:"전신을 하얗게 칠한 '외계인' 콘셉트 그룹. 압도적인 비트박스와 코미디로 무대를 장악한다.",
+      de:"Einzigartige 'Alien'-Gruppe ganz in Weiß. Begeistern mit Beatbox und Comedy.",
+      fr:"Groupe conceptuel 'extraterrestre' tout en blanc. Ils enflamment la scène avec beatbox et comédie.",
+      it:"Gruppo 'alieno' unico tutto in bianco. Infiammano i palchi con beatbox e commedia.",
+    },
+    profile:{harmony:6,tempo:8,modern:7,size:7,energy:9,japanese:1,beatbox:10,upbeat:9,covers:9,gospel:1,jazz:2},
+    songs:[{name:"Musical History",yt:"Voca People Musical History"},{name:"Movie Themes",yt:"Voca People Movie Themes"},{name:"Queen Medley",yt:"Voca People Queen Medley"}]
+  },
+  {
+    name:"The Maccabeats", origin:"🇺🇸 USA", tags:["Jewish","Pop","Parody"],
+    desc:{
+      ja:"ユダヤ教の伝統と現代ポップスを融合。親しみやすいパロディソングでYouTubeを中心に大ヒット。",
+      en:"Fusing Jewish traditions with modern pop. Massive YouTube hits with family-friendly parodies.",
+      zh:"融合犹太传统与现代流行乐。以老少咸宜的恶搞歌曲在YouTube上爆红。",
+      ko:"유대교 전통과 현대 팝의 융합. 친근한 패러디 곡으로 YouTube에서 큰 인기를 얻었다.",
+      de:"Verbindet jüdische Traditionen mit modernem Pop. YouTube-Hits mit familienfreundlichen Parodien.",
+      fr:"Fusion traditions juives et pop moderne. Succès sur YouTube avec des parodies.",
+      it:"Fonde tradizioni ebraiche e pop moderno. Successo su YouTube con parodie per famiglie.",
+    },
+    profile:{harmony:6,tempo:7,modern:8,size:6,energy:7,japanese:1,beatbox:4,upbeat:8,covers:9,gospel:1,jazz:1},
+    songs:[{name:"Candlelight",yt:"Maccabeats Candlelight"},{name:"Purim Song",yt:"Maccabeats Purim Song"},{name:"Latke Recipe",yt:"Maccabeats Latke Recipe"}]
+  },
+  {
+    name:"Ommm", origin:"🇫🇷 France", tags:["Electronic","Beatbox","Experimental"],
+    desc:{
+      ja:"フランス発。ダブステップやエレクトロの要素を声だけで表現する、極めて実験的で革新的なグループ。",
+      en:"From France. An experimental group expressing dubstep and electro elements purely with voices.",
+      zh:"来自法国。纯人声演绎Dubstep和电子乐元素，极具实验性与创新性的组合。",
+      ko:"프랑스 출신. 덥스텝이나 일렉트로 요소를 목소리로만 표현하는 실험적이고 혁신적인 그룹.",
+      de:"Aus Frankreich. Experimentelle Gruppe, die Dubstep- und Elektro-Elemente nur mit Stimmen ausdrückt.",
+      fr:"De France. Groupe expérimental exprimant le dubstep et l'électro uniquement avec les voix.",
+      it:"Dalla Francia. Gruppo sperimentale che esprime dubstep ed electro solo con le voci.",
+    },
+    profile:{harmony:5,tempo:7,modern:10,size:9,energy:8,japanese:1,beatbox:9,upbeat:5,covers:2,gospel:1,jazz:2},
+    songs:[{name:"Echoes",yt:"Ommm Echoes"},{name:"Limit",yt:"Ommm Limit"},{name:"Fall",yt:"Ommm Fall"}]
+  },
+  {
+    name:"Berywam", origin:"🇫🇷 France", tags:["Beatbox","HipHop","Champions"],
+    desc:{
+      ja:"世界ビートボックス選手権の王者コンビを含む4人組。信じられないほどのビート表現力を持つ。",
+      en:"4-piece including world beatbox champions. Unbelievable vocal rhythm and bass techniques.",
+      zh:"包含世界Beatbox冠军组合在内的四人组，拥有令人难以置信的节奏表现力。",
+      ko:"세계 비트박스 챔피언을 포함한 4인조. 믿을 수 없는 비트 표현력을 자랑한다.",
+      de:"Quartett inklusive Beatbox-Weltmeistern. Unglaubliche vokale Rhythmus- und Basstechniken.",
+      fr:"Quatuor incluant des champions du monde de beatbox. Techniques rythmiques incroyables.",
+      it:"Quartetto che include campioni mondiali di beatbox. Tecniche ritmiche incredibili.",
+    },
+    profile:{harmony:4,tempo:9,modern:10,size:9,energy:10,japanese:1,beatbox:10,upbeat:8,covers:8,gospel:1,jazz:1},
+    songs:[{name:"Berywam Got Talent",yt:"Berywam Got Talent"},{name:"Shape of You",yt:"Berywam Shape of You"},{name:"The Box",yt:"Berywam The Box"}]
+  },
+  {
+    name:"SLIXS", origin:"🇩🇪 Germany", tags:["Crossover","Jazz","Funk"],
+    desc:{
+      ja:"ドイツの6人組。ジャズ、ファンク、クラシックを融合させた予測不能なアレンジが魅力。",
+      en:"German 6-piece. Their unpredictable arrangements fuse jazz, funk, and classical music.",
+      zh:"德国六人组。融合爵士、放克与古典乐的惊人编曲充满魅力。",
+      ko:"독일의 6인조. 재즈, 펑크, 클래식을 융합한 예측 불가능한 편곡이 매력.",
+      de:"Deutsches Sextett. Unvorhersehbare Arrangements aus Jazz, Funk und Klassik.",
+      fr:"Sextette allemand. Leurs arrangements imprévisibles fusionnent jazz, funk et classique.",
+      it:"Sestetto tedesco. Arrangiamenti imprevedibili che fondono jazz, funk e classica.",
+    },
+    profile:{harmony:8,tempo:6,modern:7,size:8,energy:7,japanese:1,beatbox:5,upbeat:6,covers:5,gospel:2,jazz:8},
+    songs:[{name:"In Your Face",yt:"SLIXS In Your Face"},{name:"Take Five",yt:"SLIXS Take Five"},{name:"Walking in the Air",yt:"SLIXS Walking in the Air"}]
+  },
+  {
+    name:"Maybebop", origin:"🇩🇪 Germany", tags:["Pop","Comedy","German"],
+    desc:{
+      ja:"ドイツを中心に絶大な人気を誇る4人組。キャッチーなメロディとユーモア溢れる母国語の歌詞が特徴。",
+      en:"Massively popular 4-piece in Germany. Known for catchy melodies and humorous German lyrics.",
+      zh:"在德国极具人气的四人组。以朗朗上口的旋律和幽默的德语歌词著称。",
+      ko:"독일에서 엄청난 인기를 누리는 4인조. 귀에 꽂히는 멜로디와 유머러스한 독일어 가사가 특징.",
+      de:"Sehr beliebtes Quartett in Deutschland. Eingängige Melodien und humorvolle deutsche Texte.",
+      fr:"Quatuor très populaire en Allemagne. Mélodies accrocheuses et paroles en allemand humoristiques.",
+      it:"Quartetto molto popolare in Germania. Melodie orecchiabili e testi divertenti in tedesco.",
+    },
+    profile:{harmony:7,tempo:7,modern:7,size:9,energy:7,japanese:1,beatbox:5,upbeat:8,covers:4,gospel:2,jazz:3},
+    songs:[{name:"Gute Nacht Freunde",yt:"Maybebop Gute Nacht Freunde"},{name:"Monument",yt:"Maybebop Monument"},{name:"Wirbelwind",yt:"Maybebop Wirbelwind"}]
+  },
+  {
+    name:"Wise Guys", origin:"🇩🇪 Germany", tags:["Pop","A Cappella Rock","German Pop"],
+    desc:{
+      ja:"ドイツのア・カペラシーンを作った国民的グループ。解散後も数々の名曲が愛唱されている。",
+      en:"National group that built the German a cappella scene. Their hits remain widely sung even after disbanding.",
+      zh:"开创德国无伴奏合唱大环境的国民天团。即便解散后，其众多金曲仍被广为传唱。",
+      ko:"독일 아카펠라 씬을 만든 국민 그룹. 해체 후에도 수많은 명곡들이 사랑받고 있다.",
+      de:"Nationale Gruppe, die die deutsche A-cappella-Szene geprägt hat. Viele ihrer Hits bleiben Evergreens.",
+      fr:"Groupe national qui a bâti la scène a cappella allemande. Leurs succès continuent d'être chantés.",
+      it:"Gruppo nazionale che ha costruito la scena a cappella tedesca. I loro successi vengono ancora cantati.",
+    },
+    profile:{harmony:6,tempo:7,modern:6,size:8,energy:8,japanese:1,beatbox:4,upbeat:9,covers:2,gospel:1,jazz:2},
+    songs:[{name:"Nur für dich",yt:"Wise Guys Nur fur dich"},{name:"Jetzt ist Sommer",yt:"Wise Guys Jetzt ist Sommer"},{name:"Early Morning in the Supermarket",yt:"Wise Guys Early Morning"}]
+  },
+  {
+    name:"The Puppini Sisters", origin:"🇬🇧 UK", tags:["Swing","Retro","Close Harmony"],
+    desc:{
+      ja:"40年代のスウィングやドゥーワップを現代に蘇らせたイギリスの女性3人組。レトロな世界観が魅力。",
+      en:"British female trio reviving 40s swing and doo-wop. Their retro aesthetic is charming.",
+      zh:"复兴40年代复古摇摆乐的英国女子三人组。充满魅力的复古世界观。",
+      ko:"40년대 스윙을 현대에 부활시킨 영국의 여성 3인조. 레트로한 분위기가 매력.",
+      de:"Britisches Frauentrio, das den 40er-Swing wiederbelebt. Wunderbare Retro-Ästhetik.",
+      fr:"Trio féminin britannique ravivant le swing des années 40. Esthétique rétro charmante.",
+      it:"Trio femminile britannico che fa rivivere lo swing degli anni '40. Estetica retrò affascinante.",
+    },
+    profile:{harmony:8,tempo:6,modern:3,size:9,energy:5,japanese:1,beatbox:0,upbeat:6,covers:9,gospel:1,jazz:8},
+    songs:[{name:"Mr. Sandman",yt:"Puppini Sisters Mr Sandman"},{name:"Wuthering Heights",yt:"Puppini Sisters Wuthering Heights"},{name:"Boogie Woogie Bugle Boy",yt:"Puppini Sisters Boogie Woogie Bugle Boy"}]
+  },
+  {
+    name:"The Magnets", origin:"🇬🇧 UK", tags:["Pop","Rock","Vocal Band"],
+    desc:{
+      ja:"イギリスの6人組ボーカルバンド。パワフルなリードと重厚なベース・ビートが現代の曲を熱くカバー。",
+      en:"British 6-piece vocal band. Powerful leads and heavy bass beats in fiery contemporary covers.",
+      zh:"英国六人组人声乐团。由强有力的主唱和重低音节奏演绎现代翻唱。",
+      ko:"영국의 6인조 보컬 밴드. 파워풀한 리드와 묵직한 베이스 비트로 현대 곡들을 뜨겁게 커버한다.",
+      de:"Britische 6-köpfige Vokalband. Kraftvolle Leads und schwere Bässe in feurigen Covers.",
+      fr:"Groupe vocal britannique de 6. Voix puissantes et basses lourdes dans leurs reprises actuelles.",
+      it:"Gruppo vocale britannico di 6. Voci potenti e bassi pesanti nelle cover contemporanee.",
+    },
+    profile:{harmony:6,tempo:8,modern:8,size:8,energy:8,japanese:1,beatbox:7,upbeat:8,covers:9,gospel:3,jazz:4},
+    songs:[{name:"A To Z Of Pop",yt:"The Magnets A To Z Of Pop"},{name:"Poker Face",yt:"The Magnets Poker Face"},{name:"Chasing Cars",yt:"The Magnets Chasing Cars"}]
+  },
+  {
+    name:"The Overtones", origin:"🇬🇧 UK", tags:["Doo Wop","Soul","Pop"],
+    desc:{
+      ja:"甘いマスクと歌声で人気の5人組。ソウルやドゥーワップの名曲カバーでプラチナディスクを獲得。",
+      en:"Popular 5-piece with sweet voices and looks. Multi-platinum selling soul and doo-wop covers.",
+      zh:"凭借甜美歌声和外表走红的五人组。其灵魂乐和Doo Wop翻唱曾获白金销量。",
+      ko:"달콤한 마스크와 목소리로 인기인 5인조. 소울과 두왑 명곡 커버로 플래티넘 디스크를 획득.",
+      de:"Beliebtes Quintett mit süßen Stimmen. Platin-Alben mit Soul- und Doo-Wop-Covern.",
+      fr:"Quintette populaire aux voix douces. Leurs reprises soul et doo-wop ont été platinées.",
+      it:"Popolare quintetto dalle voci dolci. Le loro cover soul e doo-wop sono state disco di platino.",
+    },
+    profile:{harmony:7,tempo:6,modern:5,size:8,energy:6,japanese:1,beatbox:2,upbeat:7,covers:9,gospel:4,jazz:5},
+    songs:[{name:"Good Ol' Fashioned Love",yt:"The Overtones Good Ol Fashioned Love"},{name:"Runaway",yt:"The Overtones Runaway"},{name:"Gambling Man",yt:"The Overtones Gambling Man"}]
+  },
+  {
+    name:"Accent", origin:"🌏 International", tags:["Jazz","Online","A Cappella"],
+    desc:{
+      ja:"インターネットを通じて出会った世界6カ国の青年たちによるグループ。高度なジャズ和音がたまらない。",
+      en:"Formed online by youths from 6 different countries. Exquisite and advanced jazz harmonies.",
+      zh:"来自6个国家的青年通过网络组成的团体。令人无法抗拒的高级爵士和弦。",
+      ko:"인터넷을 통해 만난 6개국 청년들의 그룹. 고도의 재즈 화음이 참을 수 없다.",
+      de:"Online gegründete Gruppe aus 6 Ländern. Exquisite und fortgeschrittene Jazz-Harmonien.",
+      fr:"Groupe formé en ligne par des jeunes de 6 pays. Harmonies jazz exquises et avancées.",
+      it:"Gruppo formato online da giovani di 6 paesi. Armonie jazz squisite e avanzate.",
+    },
+    profile:{harmony:10,tempo:5,modern:6,size:8,energy:4,japanese:1,beatbox:1,upbeat:5,covers:8,gospel:2,jazz:9},
+    songs:[{name:"All The Things You Are",yt:"Accent All The Things You Are"},{name:"Ev'ry Time We Say Goodbye",yt:"Accent Ev'ry Time We Say Goodbye"},{name:"The Road Goes On",yt:"Accent The Road Goes On"}]
+  },
+  {
+    name:"The Nor'easters", origin:"🇺🇸 USA", tags:["Collegiate","Pop","Award Winning"],
+    desc:{
+      ja:"ノースイースタン大学の学生ア・カペラ。ICCAs（国際大会）優勝など、学生最高峰の熱量と迫力。",
+      en:"Collegiate group from Northeastern University. ICCA winners with pure passion and power.",
+      zh:"东北大学学生无伴奏合唱团。ICCA国际大赛冠军，展现出校级顶尖的热情与魄力。",
+      ko:"노스이스턴 대학의 학생 아카펠라. ICCAs 우승 등 학생 최고 수준의 열정과 박력을 보여준다.",
+      de:"Universitätsgruppe aus Northeastern. ICCA-Gewinner mit purer Leidenschaft und Kraft.",
+      fr:"Groupe universitaire de Northeastern. Vainqueurs de l'ICCA avec passion et puissance.",
+      it:"Gruppo universitario della Northeastern. Vincitori dell'ICCA con pura passione e potenza.",
+    },
+    profile:{harmony:7,tempo:8,modern:9,size:5,energy:9,japanese:1,beatbox:6,upbeat:8,covers:9,gospel:2,jazz:1},
+    songs:[{name:"Writings On The Wall",yt:"The Nor'easters Writings On The Wall"},{name:"Firestone",yt:"The Nor'easters Firestone"},{name:"Don't You Worry Child",yt:"The Nor'easters Don't You Worry Child"}]
+  },
+  {
+    name:"The Beelzebubs", origin:"🇺🇸 USA", tags:["Collegiate","Fun","Pop"],
+    desc:{
+      ja:"タフツ大学発の有名グループ。ドラマ『glee』におけるウォブラーズの歌唱モデルとしても知られる。",
+      en:"Famous Tufts University group. Known as the vocal models for the Dalton Academy Warblers on 'Glee'.",
+      zh:"来自塔夫茨大学的著名团体。亦被熟知为美剧《欢乐合唱团》中林莺合唱团的声音原型。",
+      ko:"터프츠 대학의 유명 그룹. 드라마 'glee'의 워블러즈 노래 모델로도 알려져 있다.",
+      de:"Berühmte Gruppe der Tufts University. Bekannt als Vokalmodelle für die Warblers in 'Glee'.",
+      fr:"Groupe célèbre de l'Université Tufts. Modèles vocaux pour les Warblers dans 'Glee'.",
+      it:"Famoso gruppo della Tufts University. Modelli vocali per i Warblers in 'Glee'.",
+    },
+    profile:{harmony:7,tempo:7,modern:8,size:5,energy:8,japanese:1,beatbox:5,upbeat:8,covers:9,gospel:2,jazz:2},
+    songs:[{name:"Teenage Dream",yt:"Beelzebubs Teenage Dream"},{name:"Bills, Bills, Bills",yt:"Beelzebubs Bills"},{name:"Hey, Soul Sister",yt:"Beelzebubs Hey Soul Sister"}]
+  },
+  {
+    name:"INSPi", origin:"🇯🇵 Japan", tags:["J-Pop","Harmony","Acoustic"],
+    desc:{
+      ja:"日本の男性6人組。やわらかな和声と、日立のCMソング「この木なんの木」の歌唱でも有名。",
+      en:"Japanese male 6-piece. Known for their soft harmonies and iconic singing in Hitachi commercials.",
+      zh:"日本男子六人组。以柔和的和声及演唱日立广告曲《这棵树是什么树》闻名。",
+      ko:"일본 남성 6인조. 부드러운 화음과 히타치 CM송 '이 나무 무슨 나무' 가창으로도 유명.",
+      de:"Japanisches 6-köpfiges Ensemble. Bekannt für weiche Harmonien und Werbesongs.",
+      fr:"Sextette masculin japonais. Connus pour leurs harmonies douces et leurs musiques de pub.",
+      it:"Sestetto maschile giapponese. Noti per le loro armonie morbide e canzoni per spot TV.",
+    },
+    profile:{harmony:8,tempo:5,modern:6,size:8,energy:5,japanese:10,beatbox:3,upbeat:6,covers:5,gospel:3,jazz:2},
+    songs:[{name:"この木なんの木 (Kono Ki Nanno Ki)",yt:"INSPi この木なんの木"},{name:"Cicada",yt:"INSPi Cicada"},{name:"粉雪 (Konayuki)",yt:"INSPi 粉雪"}]
+  },
+{
+    name:"MayTree", origin:"🇰🇷 South Korea", tags:["Sound Effects","Pop","YouTube"],
+    desc:{
+      ja:"韓国の5人組混声グループ。Windowsの効果音やゲーム音楽の完璧なア・カペラ再現で世界中で大バズり。",
+      en:"5-piece mixed group from Korea. Went viral worldwide for their flawless a cappella covers of Windows sound effects and game music.",
+      zh:"韩国五人混声组合。完美再现Windows音效和游戏音乐的无伴奏演唱在全球爆红。",
+      ko:"한국의 5인조 혼성 그룹. 윈도우 효과음과 게임 음악을 완벽한 아카펠라로 재현해 전 세계적인 화제.",
+      de:"5-köpfige gemischte Gruppe aus Korea. Weltweit viral wegen makelloser Covers von Soundeffekten.",
+      fr:"Groupe mixte de 5 de Corée. Devenus viraux pour leurs reprises a cappella des effets sonores de Windows.",
+      it:"Gruppo misto di 5 della Corea. Virali per le loro cover perfette degli effetti sonori di Windows.",
+    },
+    profile:{harmony:8,tempo:6,modern:9,size:8,energy:6,japanese:2,beatbox:8,upbeat:7,covers:10,gospel:1,jazz:3},
+    songs:[{name:"Windows Sound Effects",yt:"MayTree Windows"},{name:"iPhone Sound Effects",yt:"MayTree iPhone"},{name:"Squid Game",yt:"MayTree Squid Game"}]
+  },
+  {
+    name:"Narin", origin:"🇰🇷 South Korea", tags:["K-Pop","Covers","Vocal Band"],
+    desc:{
+      ja:"韓国の実力派5人組。K-Popを中心とした最新ヒット曲のカバーでYouTubeを中心に人気を集める。",
+      en:"Talented 5-piece from Korea. Highly popular on YouTube for their K-Pop hit covers.",
+      zh:"韩国实力派五人组。以K-Pop等人气热门歌曲的翻唱在YouTube上广受欢迎。",
+      ko:"한국의 실력파 5인조. K-Pop 중심의 최신 히트곡 커버로 YouTube에서 큰 인기를 끈다.",
+      de:"Talentiertes Quintett aus Korea. Beliebt auf YouTube für K-Pop-Covers.",
+      fr:"Quintette talentueux de Corée. Très populaire sur YouTube pour leurs reprises K-Pop.",
+      it:"Talentuoso quintetto dalla Corea. Popolare su YouTube per le cover K-Pop.",
+    },
+    profile:{harmony:7,tempo:8,modern:9,size:8,energy:7,japanese:2,beatbox:5,upbeat:8,covers:9,gospel:1,jazz:2},
+    songs:[{name:"Evolution of K-Pop",yt:"Narin Evolution of K-Pop"},{name:"Dynamite",yt:"Narin Dynamite"},{name:"Blinding Lights",yt:"Narin Blinding Lights"}]
+  },
+  {
+    name:"EXIT", origin:"🇰🇷 South Korea", tags:["Pop","Energetic","Male Vocal"],
+    desc:{
+      ja:"韓国の男性5人組ボーカルバンド。圧倒的なビート感とパワフルなコーラスワークが魅力のライブ巧者。",
+      en:"Korean 5-piece male vocal band. Excellent live performers with powerful beats and chorus work.",
+      zh:"韩国男子五人组合。展现出压倒性的节拍感和充满力量的和声，是极佳的现场表演者。",
+      ko:"한국의 남성 5인조 보컬 밴드. 압도적인 비트감과 파워풀한 코러스 워크가 돋보이는 라이브 강자.",
+      de:"Koreanische männliche 5-köpfige Vokalband. Hervorragende Live-Performer mit starken Beats.",
+      fr:"Groupe vocal masculin de 5 de Corée. Excellents en live avec des rythmes et chœurs puissants.",
+      it:"Gruppo vocale maschile di 5 della Corea. Eccellenti dal vivo con ritmi e cori potenti.",
+    },
+    profile:{harmony:6,tempo:8,modern:8,size:8,energy:9,japanese:3,beatbox:6,upbeat:9,covers:8,gospel:2,jazz:2},
+    songs:[{name:"Idol",yt:"EXIT Idol"},{name:"Uptown Funk",yt:"EXIT Uptown Funk"},{name:"The Greatest Showman",yt:"EXIT The Greatest Showman"}]
+  },
+  {
+    name:"Zenith", origin:"🇰🇷 South Korea", tags:["Jazz","Pop","Acoustic"],
+    desc:{
+      ja:"ヨーロッパのコンテストでも数々の受賞歴を誇る、韓国の5人組混声グループ。ジャジーでお洒落なサウンド。",
+      en:"5-piece mixed Korean group, award-winners at European contests. Jazzy and stylish sounds.",
+      zh:"曾在欧洲各大比赛中获奖的韩国五人混声组合，曲风充满爵士韵味与时尚感。",
+      ko:"유럽 대회에서도 수많은 수상 경력을 자랑하는 한국의 5인조 혼성 그룹. 재지하고 세련된 사운드.",
+      de:"5-köpfige gemischte koreanische Gruppe, Preisträger europäischer Wettbewerbe. Jazzig und stilvoll.",
+      fr:"Groupe mixte coréen de 5, primé dans des concours européens. Sons jazz et élégants.",
+      it:"Gruppo misto coreano di 5, premiato in concorsi europei. Sonorità jazz ed eleganti.",
+    },
+    profile:{harmony:8,tempo:6,modern:5,size:8,energy:6,japanese:2,beatbox:3,upbeat:7,covers:6,gospel:2,jazz:8},
+    songs:[{name:"Train",yt:"Zenith Train"},{name:"Sway",yt:"Zenith Sway"},{name:"Isn't She Lovely",yt:"Zenith Isn't She Lovely"}]
+  },
+  {
+    name:"The Wanted (尋人啟事)", origin:"🇹🇼 Taiwan", tags:["Original","C-Pop","Effects"],
+    desc:{
+      ja:"台湾の最前線を走る若手グループ。独自のエフェクトを駆使したサウンドとオリジナル曲のクオリティが高い。",
+      en:"Leading young group from Taiwan. Known for high-quality originals and effect-driven sounds.",
+      zh:"走在台湾最前线的年轻阿卡贝拉乐团。作品融合特殊音效与高品质的原创歌曲。",
+      ko:"대만 최전선에서 활약하는 젊은 그룹. 독자적인 이펙트를 활용한 사운드와 오리지널 곡의 퀄리티가 높다.",
+      de:"Führende junge Gruppe aus Taiwan. Bekannt für hochwertige Originalsongs und Effekte.",
+      fr:"Jeune groupe phare de Taïwan. Connu pour ses chansons originales et un son riche en effets.",
+      it:"Giovane gruppo di punta di Taiwan. Noto per brani originali di alta qualità ed effetti sonori.",
+    },
+    profile:{harmony:7,tempo:7,modern:10,size:8,energy:7,japanese:1,beatbox:7,upbeat:6,covers:5,gospel:1,jazz:2},
+    songs:[{name:"Dodo",yt:"The Wanted Dodo"},{name:"You're as Beautiful as A Flower",yt:"The Wanted Beautiful"},{name:"I Keep A Diary",yt:"The Wanted Diary"}]
+  },
+  {
+    name:"Voco Novo", origin:"🇹🇼 Taiwan", tags:["World","Jazz","Crossover"],
+    desc:{
+      ja:"世界的なア・カペラコンペティションで多数の受賞歴を持つ台湾のグループ。民謡とジャズの融合が美しい。",
+      en:"A cappella competition winners from Taiwan. Beautiful fusion of traditional folk songs and jazz.",
+      zh:"在国际大奖赛屡获殊荣的台湾组合，将传统民谣与爵士乐进行完美融合。",
+      ko:"세계적인 아카펠라 대회에서 다수 수상한 대만 그룹. 민요와 재즈의 융합이 아름답다.",
+      de:"Ausgezeichnete Gruppe aus Taiwan. Wunderschöne Fusion aus traditionellem Folk und Jazz.",
+      fr:"Groupe taïwanais primé à l'international. Belle fusion de chants folkloriques et de jazz.",
+      it:"Gruppo taiwanese vincitore di concorsi. Splendida fusione di canzoni popolari e jazz.",
+    },
+    profile:{harmony:9,tempo:4,modern:7,size:8,energy:5,japanese:2,beatbox:3,upbeat:4,covers:3,gospel:1,jazz:8},
+    songs:[{name:"Tribe's Song",yt:"Voco Novo Tribes Song"},{name:"White Peony",yt:"Voco Novo White Peony"},{name:"Wistful Missing",yt:"Voco Novo Wistful"}]
+  },
+  {
+    name:"Sirens", origin:"🇹🇼 Taiwan", tags:["Pop","Rock","Vocal Band"],
+    desc:{
+      ja:"台湾の5人組ロック＆ポップア・カペラバンド。パフォーマンスの迫力と観客を巻き込むライブが特徴。",
+      en:"5-piece rock & pop vocal band from Taiwan. Known for powerful, interactive live performances.",
+      zh:"台湾五人摇滚与流行无伴奏乐团。舞台极具爆发力，非常善于带动观众气氛。",
+      ko:"대만의 5인조 록&팝 아카펠라 밴드. 박력 있는 퍼포먼스와 관객과 호흡하는 라이브가 특징.",
+      de:"5-köpfige Rock & Pop Vokalband aus Taiwan. Kraftvolle, interaktive Live-Auftritte.",
+      fr:"Groupe vocal rock & pop de 5 de Taïwan. Performances live puissantes et interactives.",
+      it:"Gruppo rock & pop di 5 di Taiwan. Performance dal vivo potenti e interattive.",
+    },
+    profile:{harmony:6,tempo:8,modern:8,size:8,energy:9,japanese:2,beatbox:6,upbeat:9,covers:7,gospel:1,jazz:1},
+    songs:[{name:"Fighter",yt:"Sirens Fighter"},{name:"It's My Life",yt:"Sirens It's My Life"},{name:"Rolling in the Deep",yt:"Sirens Rolling in the Deep"}]
+  },
+  {
+    name:"MICappella", origin:"🇸🇬 Singapore", tags:["Bilingual","Rock","Pop"],
+    desc:{
+      ja:"シンガポールの6人組。英語と北京語を交えたバイリンガルなパフォーマンスと、エッジの効いたロックサウンドを展開。",
+      en:"6-piece from Singapore. Edgy rock sounds with bilingual performances in English and Mandarin.",
+      zh:"新加坡六人组合。以英语与华语双语演唱著称，并带有前卫摇滚的声线表现。",
+      ko:"싱가포르의 6인조. 영어와 북경어를 섞은 이중언어 퍼포먼스와 엣지 있는 록 사운드를 전개한다.",
+      de:"Sextett aus Singapur. Rockige Klänge mit zweisprachigen Auftritten in Englisch und Mandarin.",
+      fr:"Sextette de Singapour. Sonorités rock avec des performances bilingues anglais/mandarin.",
+      it:"Sestetto di Singapore. Sonorità rock con performance bilingui in inglese e mandarino.",
+    },
+    profile:{harmony:7,tempo:8,modern:9,size:8,energy:9,japanese:2,beatbox:7,upbeat:8,covers:8,gospel:1,jazz:1},
+    songs:[{name:"Evolution of Chinese Music",yt:"MICappella Evolution of Chinese Music"},{name:"Those Years",yt:"MICappella Those Years"},{name:"Here We Go",yt:"MICappella Here We Go"}]
+  },
+  {
+    name:"Acapellago", origin:"🇵🇭 Philippines", tags:["Pop","Filipino","Upbeat"],
+    desc:{
+      ja:"フィリピンの若手グループ。アジアの各種大会で優勝し、フィリピンポップス（OPM）をア・カペラで現代に響かせる。",
+      en:"Young group from the Philippines. Winners of Asian contests, bringing modern OPM pop via a cappella.",
+      zh:"菲律宾新锐团体。在亚洲各大赛事屡获冠军，用无伴奏合唱演绎现代菲律宾流行乐（OPM）。",
+      ko:"필리핀의 젊은 그룹. 아시아 각종 대회에서 우승하며 필리핀 팝(OPM)을 현대적인 아카펠라로 들려준다.",
+      de:"Junge Gruppe von den Philippinen. Gewinner asiatischer Wettbewerbe mit modernem OPM-Pop.",
+      fr:"Jeune groupe des Philippines. Vainqueurs en Asie, apportant la pop OPM moderne a cappella.",
+      it:"Giovane gruppo filippino. Vincitori di concorsi asiatici, portano il pop OPM moderno a cappella.",
+    },
+    profile:{harmony:7,tempo:7,modern:8,size:8,energy:8,japanese:1,beatbox:5,upbeat:8,covers:7,gospel:3,jazz:2},
+    songs:[{name:"Tatlong Bibe",yt:"Acapellago Tatlong Bibe"},{name:"Stars",yt:"Acapellago Stars"},{name:"Queen In The Night",yt:"Acapellago Queen In The Night"}]
+  },
+  {
+    name:"The CompanY", origin:"🇵🇭 Philippines", tags:["Jazz","Pop","Veterans"],
+    desc:{
+      ja:"1980年代から活動するフィリピンの伝説的ボーカルグループ。長年培われた至高のハーモニーとジャズ・ポップの融合。",
+      en:"Legendary Filipino vocal group active since the 80s. Masterful harmonies blending jazz and pop.",
+      zh:"自80年代活跃至今的菲律宾传奇人声组合，融合了深厚的高超和声与爵士流行。",
+      ko:"1980년대부터 활동한 필리핀의 전설적인 보컬 그룹. 오랫동안 다져진 최고의 하모니와 재즈·팝의 융합.",
+      de:"Legendäre philippinische Gruppe seit den 80ern. Meisterhafte Harmonien zwischen Jazz und Pop.",
+      fr:"Groupe vocal légendaire des Philippines actif depuis les années 80.",
+      it:"Leggendario gruppo vocale filippino attivo dagli anni '80. Armonie eccelse tra jazz e pop.",
+    },
+    profile:{harmony:9,tempo:5,modern:5,size:9,energy:5,japanese:2,beatbox:1,upbeat:5,covers:5,gospel:4,jazz:8},
+    songs:[{name:"Everlasting Love",yt:"The CompanY Everlasting Love"},{name:"Muntik Na Kitang Minahal",yt:"The CompanY Muntik Na"},{name:"Now That I Have You",yt:"The CompanY Now That I Have You"}]
+  },
+  {
+    name:"Vocal Spectrum", origin:"🇺🇸 USA", tags:["Barbershop","Champions","Overtones"],
+    desc:{
+      ja:"2006年の世界バーバーショップ王者。超高音テナーと豊かな倍音が含まれる和音が強烈に耳に響く。",
+      en:"2006 Barbershop Harmony Society Champions. Powerful overtones and soaring tenor parts.",
+      zh:"2006年世界理发师合唱冠军，以超高音男高音与丰富的泛音震撼听众的耳朵。",
+      ko:"2006년 세계 바버샵 챔피언. 초고음 테너와 풍부한 배음이 강렬하게 귀를 울린다.",
+      de:"2006 Barbershop-Weltmeister. Kraftvolle Obertöne und fantastische Tenorpartien.",
+      fr:"Champions du monde de Barbershop en 2006. Puissants harmoniques et parties de ténor.",
+      it:"Campioni mondiali di Barbershop del 2006. Potenti armonici e parti per tenore.",
+    },
+    profile:{harmony:10,tempo:6,modern:3,size:9,energy:7,japanese:1,beatbox:0,upbeat:7,covers:8,gospel:4,jazz:5},
+    songs:[{name:"Go the Distance",yt:"Vocal Spectrum Go the Distance"},{name:"I'll Hear Your Voice",yt:"Vocal Spectrum I'll Hear Your Voice"},{name:"Cruella De Vil",yt:"Vocal Spectrum Cruella De Vil"}]
+  },
+  {
+    name:"Ringmasters", origin:"🇸🇪 Sweden", tags:["Barbershop","Swedish","Precision"],
+    desc:{
+      ja:"スウェーデン出身ながら、アメリカのバーバーショップ世界大会で優勝した実力派4人組。圧倒的な精度。",
+      en:"Swedish quartet that won the BHS International Championship. Incredible precision and ringing chords.",
+      zh:"虽来自瑞典却赢得美国理发师合唱世界冠军的四人组。和声精准，共鸣震撼。",
+      ko:"스웨덴 출신이면서 미국 바버샵 세계 대회에서 우승한 실력파 4인조. 압도적인 정밀도.",
+      de:"Schwedisches Quartett, das den BHS International Championship gewann. Unglaubliche Präzision.",
+      fr:"Quatuor suédois ayant remporté le championnat international BHS. Précision incroyable.",
+      it:"Quartetto svedese vincitore del campionato internazionale BHS. Incredibile precisione.",
+    },
+    profile:{harmony:10,tempo:5,modern:3,size:9,energy:6,japanese:1,beatbox:0,upbeat:6,covers:5,gospel:2,jazz:6},
+    songs:[{name:"Tonight, Tonight",yt:"Ringmasters Tonight"},{name:"Notre Dame Medley",yt:"Ringmasters Notre Dame Medley"},{name:"Blackbird",yt:"Ringmasters Blackbird"}]
+  },
+  {
+    name:"The Newfangled Four", origin:"🇺🇸 USA", tags:["Barbershop","Comedy","Entertainers"],
+    desc:{
+      ja:"バーバーショップ界で最も笑いを取る4人組。高度なハーモニーの中にコミカルな寸劇やジョークを挟む。",
+      en:"The funniest quartet in the barbershop scene. Combining high-level harmony with comedic skits.",
+      zh:"理发师合唱界最搞笑的四人组。在高水准和声中穿插滑稽的短剧和笑话。",
+      ko:"바버샵계에서 가장 웃긴 4인조. 고도의 하모니와 코믹한 촌극, 농담을 기가 막히게 조합한다.",
+      de:"Das lustigste Quartett der Barbershop-Szene. Kombiniert hochkarätige Harmonien mit Comedy.",
+      fr:"Le quatuor le plus drôle du monde barbershop. Combinaison d'harmonies de haut niveau et de comédie.",
+      it:"Il quartetto più divertente della scena barbershop. Uniscono armonie di alto livello e commedia.",
+    },
+    profile:{harmony:8,tempo:7,modern:4,size:9,energy:8,japanese:1,beatbox:0,upbeat:9,covers:7,gospel:1,jazz:4},
+    songs:[{name:"Hello My Baby / Super Mario",yt:"Newfangled Four Mario"},{name:"SpongeBob SquarePants",yt:"Newfangled Four SpongeBob"},{name:"The Muppet Show Theme",yt:"Newfangled Four Muppet Show"}]
+  },
+  {
+    name:"Crossroads", origin:"🇺🇸 USA", tags:["Barbershop","Champions","Gospel"],
+    desc:{
+      ja:"2009年バーバーショップ世界王者。パワフルで魂を揺さぶるゴスペルや伝統曲の演奏に定評がある。",
+      en:"2009 Barbershop Champions. Renowned for their powerful, soul-stirring gospel and traditional performances.",
+      zh:"2009年理发师合唱世界冠军，以震撼灵魂的福音音乐和传统曲目演唱备受赞誉。",
+      ko:"2009년 바버샵 세계 챔피언. 파워풀하고 영혼을 흔드는 가스펠 및 전통곡 연주로 정평이 나 있다.",
+      de:"2009 Barbershop-Weltmeister. Bekannt für kraftvolle, seelenbewegende Gospel-Darbietungen.",
+      fr:"Champions de Barbershop 2009. Réputés pour leurs performances gospel et traditionnelles.",
+      it:"Campioni di Barbershop del 2009. Famosi per le loro potenti esibizioni gospel e tradizionali.",
+    },
+    profile:{harmony:10,tempo:5,modern:2,size:9,energy:7,japanese:1,beatbox:0,upbeat:6,covers:5,gospel:7,jazz:2},
+    songs:[{name:"Lucky Old Sun",yt:"Crossroads Lucky Old Sun"},{name:"Gospel Medley",yt:"Crossroads Gospel Medley"},{name:"They Wrote 'em in the Good Ol' Days",yt:"Crossroads Good Ol Days"}]
+  },
+  {
+    name:"Pitch Slapped", origin:"🇺🇸 USA", tags:["Collegiate","Jazz","R&B"],
+    desc:{
+      ja:"バークリー音楽大学の精鋭学生グループ。R&Bやジャズの難解な和音をポップスに落とし込む超絶技巧を持つ。",
+      en:"Elite collegiate group from Berklee College of Music. Masterful R&B and jazz arrangements in pop.",
+      zh:"伯克利音乐学院的精英学生团体。以将高难度R&B和爵士和弦融入流行乐的超凡技巧著称。",
+      ko:"버클리 음악 대학의 정예 학생 그룹. R&B나 재즈의 난해한 화음을 팝에 녹여내는 초절기교.",
+      de:"Elite-Studentengruppe vom Berklee College. Meisterhafte R&B- und Jazz-Arrangements in Popmusik.",
+      fr:"Groupe élite d'étudiants du Berklee College. Arrangements magistraux R&B et jazz dans la pop.",
+      it:"Gruppo elitario di studenti del Berklee College. Arrangiamenti R&B e jazz magistrali nel pop.",
+    },
+    profile:{harmony:9,tempo:7,modern:9,size:5,energy:8,japanese:1,beatbox:6,upbeat:8,covers:9,gospel:4,jazz:7},
+    songs:[{name:"Love On Top",yt:"Pitch Slapped Love On Top"},{name:"If I Ain't Got You",yt:"Pitch Slapped If I Ain't Got You"},{name:"Jealous",yt:"Pitch Slapped Jealous"}]
+  },
+  {
+    name:"The Bostonians", origin:"🇺🇸 USA", tags:["Collegiate","Pop","Classic"],
+    desc:{
+      ja:"ボストン・カレッジ発の優秀コンピレーショングループ。若さあふれるエネルギッシュなパフォーマンス。",
+      en:"Renowned collegiate group from Boston College, known for their youthfully energetic performances.",
+      zh:"波士顿学院的知名团体。充满青春活力的表现在大学无伴奏合唱界占有一席之地。",
+      ko:"보스턴 대학의 우수 컴필레이션 그룹. 젊음이 넘치는 에너제틱한 퍼포먼스.",
+      de:"Renommierte Studentengruppe vom Boston College. Bekannt für jugendlich energiegeladene Auftritte.",
+      fr:"Groupe étudiant renommé de Boston College, connu pour ses performances jeunes et énergiques.",
+      it:"Rinomato gruppo studentesco del Boston College, noto per le esibizioni giovanili ed energiche.",
+    },
+    profile:{harmony:7,tempo:7,modern:8,size:5,energy:8,japanese:1,beatbox:5,upbeat:8,covers:9,gospel:2,jazz:2},
+    songs:[{name:"Don't Stop Believin'",yt:"Bostonians Don't Stop Believin"},{name:"Runaway Baby",yt:"Bostonians Runaway Baby"},{name:"Take Me To Church",yt:"Bostonians Take Me To Church"}]
+  },
+  {
+    name:"SoCal VoCals", origin:"🇺🇸 USA", tags:["Collegiate","Pop","Rock"],
+    desc:{
+      ja:"南カリフォルニア大学発。ICCA（大学ア・カペラ世界大会）で多数の優勝歴を誇る最速最強の学生グループ。",
+      en:"From USC. The most decorated group in ICCA history, delivering fast-paced, powerhouse performances.",
+      zh:"来自南加州大学。在ICCA中拿下最多次冠军的学生队伍，以极速与极具力量感的演出闻名。",
+      ko:"남가주 대학(USC) 출신. ICCA 역대 최다 우승에 빛나는 막강한 파워와 속도감의 학생 그룹.",
+      de:"Aus USC. Die am meisten ausgezeichnete Gruppe der ICCA-Geschichte. Kraftvolle Auftritte.",
+      fr:"De l'USC. Le groupe le plus titré de l'histoire de l'ICCA. Performances surpuissantes.",
+      it:"Dell'USC. Il gruppo più premiato nella storia dell'ICCA. Esibizioni molto potenti.",
+    },
+    profile:{harmony:8,tempo:9,modern:9,size:5,energy:10,japanese:1,beatbox:7,upbeat:9,covers:10,gospel:2,jazz:3},
+    songs:[{name:"Somebody to Love",yt:"SoCal VoCals Somebody to Love"},{name:"Crazy",yt:"SoCal VoCals Crazy"},{name:"I Believe in a Thing Called Love",yt:"SoCal VoCals I Believe"}]
+  },
+  {
+    name:"Cadence", origin:"🇨🇦 Canada", tags:["Jazz","Instrumental","Innovative"],
+    desc:{
+      ja:"カナダの4人組。声で楽器のような音を表現し、洗練されたジャズからポップスまでを革新的なアレンジで歌う。",
+      en:"Canadian quartet. They emulate instruments vocally, singing everything from jazz to pop with innovative arrangements.",
+      zh:"加拿大四人组。他们用人声模拟乐器，编排别具一格，游走于爵士与流行之间。",
+      ko:"캐나다 4인조. 목소리로 악기 소리를 내며, 재즈부터 팝까지 혁신적인 편곡으로 노래한다.",
+      de:"Kanadisches Quartett. Imitiert Instrumente vokal und verbindet Jazz bis Pop mit innovativen Arrangements.",
+      fr:"Quatuor canadien. Imite les instruments avec la voix. Arrangements innovants de jazz à pop.",
+      it:"Quartetto canadese. Imita gli strumenti con la voce. Arrangiamenti innovativi dal jazz al pop.",
+    },
+    profile:{harmony:9,tempo:6,modern:6,size:9,energy:5,japanese:2,beatbox:4,upbeat:6,covers:5,gospel:1,jazz:9},
+    songs:[{name:"Lullaby of Birdland",yt:"Cadence Lullaby of Birdland"},{name:"Sunshine in my Pocket",yt:"Cadence Sunshine"},{name:"Slam",yt:"Cadence Slam"}]
+  },
+  {
+    name:"Da Vinci's Notebook", origin:"🇺🇸 USA", tags:["Comedy","Folk","A Cappella"],
+    desc:{
+      ja:"90年代～00年代にかけて活躍した米国の4人組。民謡やカントリーを土台に、超シュールでコミカルな歌詞を乗せる。",
+      en:"Active in the 90s-00s. Based in folk and country, they delivered incredibly surreal and comedic a cappella.",
+      zh:"活跃于90年代至千禧年初的美国四人组。在民谣和乡村乐基础上加入超现实的幽默歌词。",
+      ko:"90~00년대 활약한 미국 4인조. 포크와 컨트리 위에 초현실적이고 코믹한 가사를 얹은 아카펠라.",
+      de:"Aktiv in den 90er-00ern. Auf Folk und Country basierend, mit surrealer und komödiantischer A-cappella.",
+      fr:"Actifs dans les années 90-00. Basés sur le folk et la country avec des paroles surréalistes.",
+      it:"Attivi negli anni '90 e '00. Con basi folk e country cantavano testi surreali e comici.",
+    },
+    profile:{harmony:7,tempo:6,modern:3,size:9,energy:6,japanese:1,beatbox:1,upbeat:8,covers:3,gospel:1,jazz:2},
+    songs:[{name:"Enormous Penis",yt:"Da Vinci's Notebook Enormous Penis"},{name:"Secret Asian Man",yt:"Da Vinci's Notebook Secret Asian Man"},{name:"Title of the Song",yt:"Da Vinci's Notebook Title of the Song"}]
+  },
+  {
+    name:"Six Appeal", origin:"🇺🇸 USA", tags:["Comedy","Pop","Rock"],
+    desc:{
+      ja:"ダイナミックなロックポップを得意とする男性6人組。モスクワ国際大会でも優勝する実力でありながら、ユーモア抜群。",
+      en:"Male 6-piece excelling in dynamic rock/pop. Moscow International Champions balancing high talent with great humor.",
+      zh:"精通硬核摇滚与流行乐的男子六人组。不仅赢过莫斯科国际阿卡贝拉大赛冠军，还极具幽默感。",
+      ko:"다이나믹한 록과 팝이 특기인 남성 6인조. 모스크바 국제 대회 우승 실력에 유머 감각까지 뛰어나다.",
+      de:"Männliches Sextett, das in dynamischem Rock/Pop glänzt. Internationale Meister mit großem Humor.",
+      fr:"Sextette masculin excellant dans le pop/rock. Champions internationaux avec beaucoup d'humour.",
+      it:"Sestetto maschile che eccelle nel pop/rock. Campioni internazionali ricchi di umorismo.",
+    },
+    profile:{harmony:7,tempo:8,modern:8,size:8,energy:9,japanese:1,beatbox:6,upbeat:9,covers:7,gospel:2,jazz:3},
+    songs:[{name:"Circle of Life",yt:"Six Appeal Circle of Life"},{name:"Little Talks",yt:"Six Appeal Little Talks"},{name:"Cry Me A River",yt:"Six Appeal Cry Me A River"}]
+  },
+{
+    name:"Duwende", origin:"🇺🇸 USA", tags:["Funk","Pop","Bass"],
+    desc:{
+      ja:"マイケル・ジャクソンの曲をはじめとするファンク・ポップが得意な6人組。唸るようなベースラインが圧倒的。",
+      en:"6-piece specializing in funk/pop, especially Michael Jackson covers. Known for jaw-dropping, grooving bass lines.",
+      zh:"擅长放克与流行乐（特别是迈克尔·杰克逊翻唱）的六人组。以令人惊叹的贝斯低音线条著称。",
+      ko:"마이클 잭슨 곡을 비롯한 펑크/팝이 특기인 6인조. 으르렁거리는 듯한 베이스 라인이 압도적.",
+      de:"6-köpfige Funk/Pop-Gruppe. Bekannt für atemberaubende groovige Basslinien, insbesondere bei Michael Jackson.",
+      fr:"Sextette spécialisé en funk/pop (notamment Michael Jackson). Lignes de basse incroyables.",
+      it:"Sestetto specializzato in funk/pop (specialmente Michael Jackson). Linee di basso incredibili.",
+    },
+    profile:{harmony:6,tempo:8,modern:8,size:8,energy:9,japanese:1,beatbox:7,upbeat:9,covers:10,gospel:4,jazz:2},
+    songs:[{name:"Billie Jean",yt:"Duwende Billie Jean"},{name:"Rock With You",yt:"Duwende Rock With You"},{name:"Feel It Still",yt:"Duwende Feel It Still"}]
+  },
+  {
+    name:"Face Vocal Band", origin:"🇺🇸 USA", tags:["Rock","Vocal Band","Originals"],
+    desc:{
+      ja:"コロラド州発の完全無欠なア・カペラ・ロックバンド。声の限界を超えるハードなサウンドを叩き出す。",
+      en:"All-vocal rock band from Colorado. They push the limits of the human voice to deliver hard-hitting rock.",
+      zh:"来自科罗拉多州的纯人声摇滚乐队。突破人声极限，带来震撼心魄的硬核摇滚。",
+      ko:"콜로라도 출신의 완벽한 아카펠라 록 밴드. 목소리의 한계를 넘어서는 하드한 사운드를 뿜어낸다.",
+      de:"Reine Vokal-Rockband aus Colorado. Pusht die Grenzen der Stimme mit knallhartem Rock.",
+      fr:"Groupe de rock vocal du Colorado. Repousse les limites de la voix humaine avec du rock pur.",
+      it:"Gruppo rock vocale del Colorado. Spinge i limiti della voce umana con puro rock.",
+    },
+    profile:{harmony:5,tempo:9,modern:8,size:8,energy:10,japanese:1,beatbox:9,upbeat:8,covers:5,gospel:1,jazz:1},
+    songs:[{name:"How You Remind Me",yt:"Face Vocal Band How You Remind Me"},{name:"Locked Out Of Heaven",yt:"Face Vocal Band Locked Out Of Heaven"},{name:"Back In Black",yt:"Face Vocal Band Back In Black"}]
+  },
+  {
+    name:"The Filharmonic", origin:"🇺🇸 USA", tags:["Pop","Filipino-American","Upbeat"],
+    desc:{
+      ja:"映画『ピッチ・パーフェクト2』にも出演したフィリピン系アメリカ人の男性グループ。明るくポップなハーモニー。",
+      en:"Filipino-American male group featured in 'Pitch Perfect 2'. Cheerful, pop-infused harmonies.",
+      zh:"曾出演电影《完美音调2》的菲律宾裔美国男子组合。呈现出极为开朗流行的和声。",
+      ko:"영화 '피치 퍼펙트2'에도 출연한 필리핀계 미국인 남성 그룹. 밝고 팝적인 하모니.",
+      de:"Filipino-amerikanische Männergruppe (Pitch Perfect 2). Fröhliche, pop-geladene Harmonien.",
+      fr:"Groupe masculin philippino-américain (vu dans 'Pitch Perfect 2'). Harmonies joyeuses et pop.",
+      it:"Gruppo maschile filippino-americano (visto in 'Pitch Perfect 2'). Armonie allegre e pop.",
+    },
+    profile:{harmony:7,tempo:8,modern:9,size:8,energy:8,japanese:1,beatbox:6,upbeat:9,covers:9,gospel:2,jazz:2},
+    songs:[{name:"Flashlight",yt:"Filharmonic Flashlight"},{name:"One More Night",yt:"Filharmonic One More Night"},{name:"Treasure",yt:"Filharmonic Treasure"}]
+  },
+  {
+    name:"Nota", origin:"🇵🇷 Puerto Rico", tags:["Latin","Pop","Sing-Off Winners"],
+    desc:{
+      ja:"米NBC『The Sing Off』初代優勝グループ。プエルトリコ発の情熱的でリズミカルなラテンサウンドが魅力。",
+      en:"Season 1 winners of NBC's 'The Sing-Off'. Known for their passionate and rhythmic Puerto Rican Latin sound.",
+      zh:"美国NBC《The Sing Off》首季冠军。源自波多黎各，充满热情与节奏感的拉丁声线魅力无穷。",
+      ko:"미국 NBC 'The Sing-Off' 초대 우승팀. 푸에르토리코 특유의 열정적이고 리드미컬한 라틴 사운드.",
+      de:"Staffel 1-Gewinner von 'The Sing-Off'. Leidenschaftliche, rhythmische puerto-ricanische Latino-Klänge.",
+      fr:"Gagnants saison 1 de 'The Sing-Off'. Sons latino-portoricains passionnés et rythmés.",
+      it:"Vincitori stagione 1 di 'The Sing-Off'. Suoni latino-portoricani appassionati e ritmici.",
+    },
+    profile:{harmony:7,tempo:8,modern:7,size:8,energy:9,japanese:1,beatbox:7,upbeat:9,covers:8,gospel:3,jazz:4},
+    songs:[{name:"Down",yt:"Nota Down"},{name:"My Life Would Suck Without You",yt:"Nota My Life"},{name:"I Gotta Feeling",yt:"Nota I Gotta Feeling"}]
+  },
+  {
+    name:"Street Corner Symphony", origin:"🇺🇸 USA", tags:["Southern","Soul","Classic Rock"],
+    desc:{
+      ja:"テネシー州出身。ソウルフルな歌声とサザンロックのテイストをア・カペラで泥臭く表現する姿が渋い。",
+      en:"From Tennessee. They perform a cappella with a gritty, deep Southern rock and soulful flair.",
+      zh:"来自田纳西州。以充满灵魂的歌声演绎南方摇滚，无伴奏表现力极其粗犷且极具韵味。",
+      ko:"테네시주 출신. 소울풀한 보컬과 서던 록의 테이스트를 아카펠라로 진하게 표현한다.",
+      de:"Aus Tennessee. A-cappella mit tiefem, erdigem Southern-Rock und Soul-Flair.",
+      fr:"Du Tennessee. A cappella avec un flair profond de rock sudiste et de soul.",
+      it:"Dal Tennessee. A cappella con un tocco profondo di southern rock e soul.",
+    },
+    profile:{harmony:7,tempo:6,modern:4,size:8,energy:7,japanese:1,beatbox:3,upbeat:7,covers:8,gospel:8,jazz:3},
+    songs:[{name:"Creep",yt:"Street Corner Symphony Creep"},{name:"Hey Jude",yt:"Street Corner Symphony Hey Jude"},{name:"Down on the Corner",yt:"SCS Down on the Corner"}]
+  },
+  {
+    name:"Ten", origin:"🇺🇸 USA", tags:["Gospel","R&B","Soul"],
+    desc:{
+      ja:"ゴスペルとR&Bをルーツに持つ黒人グループ。重厚で温かみのある本格的なコーラスが心に染みる。",
+      en:"African-American group rooted in Gospel and R&B. Deep, warm backing vocals that touch the soul.",
+      zh:"扎根于福音与R&B的非裔团体。浑厚温暖的正宗和声直击人心。",
+      ko:"가스펠과 R&B를 뿌리로 둔 흑인 그룹. 묵직하고 따뜻한 정통 코러스가 가슴을 파고든다.",
+      de:"Gospel- und R&B-Wurzeln. Tiefe, warme Harmonien, die direkt ins Herz gehen.",
+      fr:"Groupe afro-américain (Gospel/R&B). Merveilleux chœurs profonds et chaleureux.",
+      it:"Gruppo afroamericano (Gospel/R&B). Meravigliosi cori profondi e calorosi.",
+    },
+    profile:{harmony:9,tempo:5,modern:5,size:2,energy:6,japanese:1,beatbox:2,upbeat:6,covers:5,gospel:10,jazz:4},
+    songs:[{name:"Chain of Fools",yt:"Ten Chain of Fools"},{name:"Joyful Joyful",yt:"Ten Joyful"},{name:"Let's Stay Together",yt:"Ten Lets Stay Together"}]
+  },
+  {
+    name:"Women of the World", origin:"🌏 International", tags:["World Music","Folk","Award Winning"],
+    desc:{
+      ja:"バークリー出身の世界4カ国の女性によるグループ。30以上の言語で歌い、世界の民謡を圧倒的な歌唱力で繋ぐ。",
+      en:"Formed at Berklee by 4 women from different countries. They sing in over 30 languages, connecting world folk music.",
+      zh:"由来自4个国家的伯克利女性毕业生组成。用30多种语言演唱，以压倒性的歌唱实力连结世界民谣。",
+      ko:"버클리 출신 세계 4개국 여성들의 그룹. 30개 이상의 언어로 노래하며 세계의 민요를 압도적 가창력으로 잇는다.",
+      de:"Von 4 Frauen aus verschiedenen Ländern gegründet. Singt in über 30 Sprachen Welt-Folk.",
+      fr:"Formé par 4 femmes de pays différents. Chantent en plus de 30 langues des musiques du monde.",
+      it:"Formato da 4 donne di paesi diversi. Cantano in oltre 30 lingue musiche dal mondo.",
+    },
+    profile:{harmony:9,tempo:5,modern:4,size:9,energy:6,japanese:6,beatbox:2,upbeat:5,covers:2,gospel:4,jazz:5},
+    songs:[{name:"African Medley",yt:"Women of the World African"},{name:"Kaval Sviri",yt:"Women of the World Kaval Sviri"},{name:"Samba Em Preludio",yt:"Women of the World Samba"}]
+  },
+  {
+    name:"The Soil", origin:"🇿🇦 South Africa", tags:["Kasi Soul","African","Beatbox"],
+    desc:{
+      ja:"南アフリカの3人組。ヒューマンビートボックスと極太のベースラインの上に、ソウルフルな歌声が乗る「カシ・ソウル」。",
+      en:"3-piece from South Africa. Their 'Kasi Soul' combines human beatbox, thick bass, and soulful vocals.",
+      zh:"南非三人组。在人声Beatbox与极具分量的低音之上，吟唱出充满灵魂的「Kasi Soul」。",
+      ko:"남아공의 3인조. 휴먼 비트박스와 묵직한 베이스 라인 위에 소울풀한 보컬이 얹힌 '카시 소울'.",
+      de:"Trio aus Südafrika. 'Kasi Soul' kombiniert Beatbox, Bass und gefühlvolle Vocals.",
+      fr:"Trio d'Afrique du Sud. Leur 'Kasi Soul' combine beatbox, basse et voix soul.",
+      it:"Trio del Sud Africa. Il loro 'Kasi Soul' unisce beatbox, bassi profondi e voci soul.",
+    },
+    profile:{harmony:6,tempo:7,modern:5,size:9,energy:8,japanese:1,beatbox:8,upbeat:8,covers:1,gospel:6,jazz:5},
+    songs:[{name:"Joy (We Are Family)",yt:"The Soil Joy"},{name:"Sunday",yt:"The Soil Sunday"},{name:"Baninzi",yt:"The Soil Baninzi"}]
+  },
+  {
+    name:"The Techtonics", origin:"🇬🇧 UK", tags:["Collegiate","Pop","Electronic"],
+    desc:{
+      ja:"インペリアル・カレッジ・ロンドンの男性グループ。テクノやエレクトロニカを取り入れた編曲でICCA世界大会を制覇。",
+      en:"Alumni of Imperial College London. ICCA winners blending techno and electronica with collegiate pop.",
+      zh:"伦敦帝国学院男子天团。精通电子与Techno风格编曲，曾全胜夺得ICCA世界冠军。",
+      ko:"임페리얼 칼리지 런던의 남성 그룹. 테크노와 일렉트로니카를 접목한 편곡으로 ICCA 세계대회를 제패.",
+      de:"Gesangsgruppe des Imperial College London. ICCA-Gewinner mit Techno-Einflüssen.",
+      fr:"Anciens de l'Imperial College de Londres. Vainqueurs ICCA mélangeant techno et pop.",
+      it:"Ex studenti dell'Imperial College di Londra. Vincitori ICCA che fondono techno e pop.",
+    },
+    profile:{harmony:7,tempo:9,modern:10,size:6,energy:9,japanese:1,beatbox:8,upbeat:8,covers:9,gospel:1,jazz:2},
+    songs:[{name:"Earthquake / Survivor",yt:"The Techtonics Earthquake"},{name:"Breezeblocks",yt:"Techtonics Breezeblocks"},{name:"Stacy's Mom",yt:"Techtonics Stacys Mom"}]
+  },
+  {
+    name:"Out of the Blue", origin:"🇬🇧 UK", tags:["Collegiate","Charity","Pop"],
+    desc:{
+      ja:"オックスフォード大学およびオックスフォード・ブルックス大学の混成男性グループ。数千万再生を誇るチャリティカバーが有名。",
+      en:"All-male group from Oxford. Famous for highly successful charity covers with tens of millions of views.",
+      zh:"牛津大学男生乐团。以点阅率破千万的慈善翻唱音乐影片而名扬世界。",
+      ko:"옥스포드 대학 남성 그룹. 수천만 재생을 달성한 자선 커버 영상으로 유명하다.",
+      de:"Männergruppe aus Oxford. Berühmt für millionenfach geklickte Charity-Covers.",
+      fr:"Groupe masculin d'Oxford. Célèbres pour leurs reprises caritatives vues des millions de fois.",
+      it:"Gruppo maschile di Oxford. Famosi per le cover benefiche molto virali.",
+    },
+    profile:{harmony:7,tempo:7,modern:7,size:5,energy:8,japanese:1,beatbox:5,upbeat:9,covers:10,gospel:2,jazz:2},
+    songs:[{name:"Hips Don't Lie",yt:"Out of the Blue Hips Don't Lie"},{name:"All I Want for Christmas Is You",yt:"Out of the Blue Mariah"},{name:"Lady Marmalade",yt:"Out of the Blue Lady Marmalade"}]
+  },
+  {
+    name:"The Sons of Pitches", origin:"🇬🇧 UK", tags:["Comedy","Improv","Pop"],
+    desc:{
+      ja:"イギリスで大人気の男性グループ。BBCの番組で優勝し、即興でジャンルを変えて歌うパフォーマンスが天才的。",
+      en:"Popular UK male group. Winners of a BBC contest, renowned for their genius improvised genre-swapping covers.",
+      zh:"英国当红男子天团。BBC选秀冠军，其即兴转换曲风的爆笑演出堪称天才级。",
+      ko:"영국 인기 남성 그룹. BBC 프로그램에서 우승했으며, 즉흥적으로 장르를 바꿔 부르는 퍼포먼스가 천재적.",
+      de:"Beliebte britische Männergruppe. Bekannt für genial improvisierte Genre-Wechsel beim Singen.",
+      fr:"Groupe masculin britannique populaire. Vainqueurs sur la BBC, connus pour leurs improvisations.",
+      it:"Popolare gruppo maschile britannico. Vincitori sulla BBC, noti per le loro improvvisazioni.",
+    },
+    profile:{harmony:8,tempo:8,modern:7,size:8,energy:9,japanese:1,beatbox:8,upbeat:9,covers:9,gospel:2,jazz:5},
+    songs:[{name:"MMMBop",yt:"Sons of Pitches MMMBop"},{name:"Toxic",yt:"Sons of Pitches Toxic"},{name:"10 Genres",yt:"Sons of Pitches 10 Genres"}]
+  },
+  {
+    name:"Rock4", origin:"🇳🇱 Netherlands", tags:["Rock","Queen Covers","Powerful"],
+    desc:{
+      ja:"オランダ出身。Queenのカバーなどで知られ、リードボーカルの驚異的なハイトーンと表現力でロックを見事に歌いきる。",
+      en:"From the Netherlands. Famous for Queen covers. The lead vocalist's incredible high range perfectly captures the essence of rock.",
+      zh:"荷兰四人组合。以翻唱Queen等摇滚巨作为特色，主唱惊人的高音完美诠释了摇滚。",
+      ko:"네덜란드 라이브 강자. Queen의 곡 커버로 유명하며 리드보컬의 경이로운 하이톤이 록의 정수를 보여줌.",
+      de:"Aus den Niederlanden. Berühmt für Queen-Covers. Der Lead-Sänger trifft atemberaubende Töne.",
+      fr:"Des Pays-Bas. Célèbres pour les reprises de Queen avec une voix rock aiguë incroyable.",
+      it:"Dai Paesi Bassi. Famosi per cover dei Queen con una voce rock acuta incredibile.",
+    },
+    profile:{harmony:7,tempo:8,modern:6,size:9,energy:10,japanese:1,beatbox:4,upbeat:7,covers:8,gospel:1,jazz:2},
+    songs:[{name:"Bohemian Rhapsody",yt:"Rock4 Bohemian Rhapsody"},{name:"Uninvited",yt:"Rock4 Uninvited"},{name:"Killer Queen",yt:"Rock4 Killer Queen"}]
+  },
+  {
+    name:"Jazzation", origin:"🇭🇺 Hungary", tags:["Jazz","Folk","A Cappella"],
+    desc:{
+      ja:"ハンガリーの5人組。東欧特有の仄暗さがあるジャズ和声と民族音楽的アプローチで、多くの国際賞を獲得。",
+      en:"5-piece from Hungary. Award-winning blend of Eastern European folk influences and complex jazz harmonies.",
+      zh:"匈牙利五人组合。融合了东欧特有的深邃爵士和弦与民族音乐元素，屡获大奖。",
+      ko:"헝가리의 5인조. 동유럽 특유의 어두운 재즈 화성과 민속 음악적 접근으로 수많은 국제상을 휩쓸었다.",
+      de:"Quintett aus Ungarn. Preisgekrönte Mischung aus osteuropäischem Folk und Jazz.",
+      fr:"Quintette de Hongrie. Mélange primé de folk d'Europe de l'Est et de jazz.",
+      it:"Quintetto dall'Ungheria. Miscela premiata di folk dell'Europa dell'Est e jazz.",
+    },
+    profile:{harmony:9,tempo:5,modern:4,size:8,energy:5,japanese:2,beatbox:2,upbeat:4,covers:4,gospel:3,jazz:10},
+    songs:[{name:"Night In Tunisia",yt:"Jazzation Night In Tunisia"},{name:"Sweet Dreams",yt:"Jazzation Sweet Dreams"},{name:"Zold az erdo",yt:"Jazzation Zold az erdo"}]
+  },
+  {
+    name:"Suade", origin:"🇦🇺 Australia", tags:["Pop","Comedy","Male Vocal"],
+    desc:{
+      ja:"オーストラリアのコミカルな4人組男性グループ。歌のうまさはさることながら、観客を爆笑させるショーマンシップが光る。",
+      en:"Comedic Australian 4-piece. Outstanding vocal talent matched only by their hilarious showmanship.",
+      zh:"澳大利亚的滑稽男子四人组。在此绝佳唱功之上，其逗乐观众的舞台表现更是一绝。",
+      ko:"호주의 코믹한 4인조 남성 그룹. 가창력은 물론이고 관객을 폭소케 하는 쇼맨십이 빛난다.",
+      de:"Komödiantisches Quartett aus Australien. Hervorragende Vocals mit exzellentem Humor.",
+      fr:"Quatuor comique australien. Voix remarquables et grand sens de l'humour.",
+      it:"Quartetto comico australiano. Voci notevoli e grande senso dell'umorismo.",
+    },
+    profile:{harmony:7,tempo:7,modern:6,size:9,energy:8,japanese:1,beatbox:3,upbeat:9,covers:7,gospel:2,jazz:4},
+    songs:[{name:"I Feel Good",yt:"Suade I Feel Good"},{name:"Thriller",yt:"Suade Thriller"},{name:"Livin' On A Prayer",yt:"Suade Livin On A Prayer"}]
+  },
+  {
+    name:"The Apex Project", origin:"🇸🇬 Singapore", tags:["Pop","Jazz","Theatrical"],
+    desc:{
+      ja:"シンガポールの多才な混声グループ。シアトリカルな演出と、ポップ・ジャズを行き来するクールなアレンジが武器。",
+      en:"Versatile mixed group from Singapore. Known for theatrical performances and cool pop-jazz arrangements.",
+      zh:"新加坡的多才混声团体。以戏剧化的舞台和穿梭于流行与爵士之间的酷炫编曲为武器。",
+      ko:"싱가포르의 다재다능한 혼성 그룹. 연극적인 연출과 팝·재즈를 오가는 쿨한 편곡이 무기.",
+      de:"Vielseitige Gruppe aus Singapur. Theatralische Auftritte und coole Pop-Jazz-Arrangements.",
+      fr:"Groupe polyvalent de Singapour. Performances théâtrales et arrangements pop-jazz cool.",
+      it:"Gruppo versatile di Singapore. Esibizioni teatrali e fantastici arrangiamenti pop-jazz.",
+    },
+    profile:{harmony:8,tempo:7,modern:8,size:8,energy:7,japanese:3,beatbox:6,upbeat:7,covers:8,gospel:2,jazz:7},
+    songs:[{name:"Evolution of JJ Lin",yt:"Apex Project Evolution JJ Lin"},{name:"Have Yourself A Merry Little Christmas",yt:"Apex Project Have Yourself"},{name:"Guns For Hands",yt:"Apex Project Guns For Hands"}]
+  },
+  {
+    name:"Acappella ExpreSSS", origin:"🇷🇺 Russia", tags:["Classical","Jazz","Virtuoso"],
+    desc:{
+      ja:"ロシアの6人組。クラシックやロシア民謡からジャズまで、息をのむほど精密で技巧的なコーラスを聴かせる。",
+      en:"6-piece from Russia. Virtuosic choruses blending classical, Russian folk, and jazz with breathtaking precision.",
+      zh:"俄罗斯六人组。能够极其精准而高超地演绎从古典、俄罗斯民谣一直到爵士的乐风。",
+      ko:"러시아의 6인조. 클래식이나 러시아 민요부터 재즈까지, 숨막힐 정도로 정밀하고 기교 넘치는 코러스를 들려준다.",
+      de:"Sextett aus Russland. Virtuose Harmonien von Klassik über russischen Folk bis hin zu Jazz.",
+      fr:"Sextette de Russie. Chœurs virtuoses mêlant classique, folk russe et jazz.",
+      it:"Sestetto dalla Russia. Cori virtuosi che uniscono classica, folk russo e jazz.",
+    },
+    profile:{harmony:10,tempo:6,modern:4,size:8,energy:6,japanese:1,beatbox:2,upbeat:5,covers:4,gospel:2,jazz:8},
+    songs:[{name:"Flight of the Bumblebee",yt:"Acappella ExpreSSS Bumblebee"},{name:"Kalinka",yt:"Acappella ExpreSSS Kalinka"},{name:"Blue Rondo a la Turk",yt:"Acappella ExpreSSS Blue Rondo"}]
+  },
+  {
+    name:"ManSound", origin:"🇺🇦 Ukraine", tags:["Jazz","Sextet","Slavic"],
+    desc:{
+      ja:"ウクライナの男性6人組。東欧のジャズ・ア・カペラを代表する存在で、ゴスペルやスラブ音楽の要素も取り入れる。",
+      en:"Ukrainian male sextet. Leading figures in Eastern European jazz a cappella, merging Slavic music and gospel.",
+      zh:"乌克兰男子六重唱。代表东欧爵士无伴奏合唱的领军人物，亦融入福音和斯拉夫音乐。",
+      ko:"우크라이나 남성 6인조. 동유럽 재즈 아카펠라를 대표하며, 가스펠이나 슬라브 음악 요소도 접목.",
+      de:"Ukrainisches Männersextett. Führend im osteuropäischen Jazz-A-cappella.",
+      fr:"Sextette masculin ukrainien. Leaders du jazz a cappella d'Europe de l'Est.",
+      it:"Sestetto maschile ucraino. Leader nel jazz a cappella dell'Europa dell'Est.",
+    },
+    profile:{harmony:9,tempo:6,modern:4,size:8,energy:6,japanese:1,beatbox:2,upbeat:6,covers:3,gospel:5,jazz:9},
+    songs:[{name:"Slavic Folk Song",yt:"ManSound Slavic Folk"},{name:"Nature Boy",yt:"ManSound Nature Boy"},{name:"Heaven",yt:"ManSound Heaven"}]
+  },
+  {
+    name:"Duke's Men of Yale", origin:"🇺🇸 USA", tags:["Collegiate","Tradition","Male Vocal"],
+    desc:{
+      ja:"イェール大学の伝統ある男性ア・カペラグループ。重く豊かな響きと、時折見せるユーモアが米国学生ア・カペラの王道。",
+      en:"Traditional male group from Yale University. Rich baritone sounds and typical collegiate humor.",
+      zh:"耶鲁大学传统男子无伴奏团体。以醇厚丰满的男中低音与美式大学生独特的幽默感闻名。",
+      ko:"예일 대학의 전통 있는 남성 아카펠라 그룹. 풍부한 울림과 유머러스한 미국 학생 아카펠라의 정석.",
+      de:"Traditionelle Männergruppe der Yale University. Reiche Baritonklänge und studentischer Humor.",
+      fr:"Groupe masculin traditionnel de Yale. Sons riches et humour étudiant typique.",
+      it:"Gruppo maschile tradizionale di Yale. Suoni ricchi di baritono e tipico umorismo studentesco.",
+    },
+    profile:{harmony:7,tempo:6,modern:7,size:4,energy:7,japanese:1,beatbox:3,upbeat:7,covers:8,gospel:4,jazz:4},
+    songs:[{name:"All Night Long",yt:"Dukes Men All Night Long"},{name:"Superstition",yt:"Dukes Men Superstition"},{name:"Signed, Sealed, Delivered",yt:"Dukes Men Signed Sealed"}]
+  },
+  {
+    name:"BYU Vocal Point", origin:"🇺🇸 USA", tags:["Collegiate","Pop","Clean"],
+    desc:{
+      ja:"ブリガムヤング大学の9人組。圧倒的な再生回数を誇るYouTubeの大スターで、クリーンで壮大なポップカバーが特徴。",
+      en:"9-piece from Brigham Young University. YouTube superstars known for clean, epic pop covers.",
+      zh:"杨百翰大学九人组。坐拥数百万播放量的YouTube巨星，以清新壮阔的流行翻唱著称。",
+      ko:"브리검영 대학의 9인조. 압도적인 조회수를 자랑하는 유튜브 스타로, 깨끗하고 장대한 팝 커버가 특징.",
+      de:"9-köpfige Gruppe der BYU. YouTube-Superstars, bekannt für epische Pop-Covers.",
+      fr:"Groupe de 9 de la BYU. Superstars de YouTube connues pour leurs superbes reprises pop.",
+      it:"Gruppo di 9 della BYU. Superstar di YouTube noti per le epiche cover pop.",
+    },
+    profile:{harmony:8,tempo:7,modern:9,size:4,energy:9,japanese:1,beatbox:6,upbeat:8,covers:10,gospel:6,jazz:2},
+    songs:[{name:"Nearer, My God, to Thee",yt:"BYU Vocal Point Nearer"},{name:"Beauty and the Beast",yt:"BYU Vocal Point Beauty and the Beast"},{name:"Newsies Medley",yt:"BYU Vocal Point Newsies"}]
+  },
+  {
+    name:"BYU Noteworthy", origin:"🇺🇸 USA", tags:["Collegiate","Female","Empowering"],
+    desc:{
+      ja:"ブリガムヤング大学の女性のみのア・カペラグループ。天使のようなハーモニーで、力強く感動的な音楽を届ける。",
+      en:"All-female a cappella group from BYU. Angelic harmonies delivering powerful, inspiring music.",
+      zh:"杨百翰大学全女声团体。以宛如天使般的和声传递充满力量与感动的人声音乐。",
+      ko:"브리검영 대학의 여성 아카펠라 그룹. 천사 같은 하모니로 강렬하고 감동적인 음악을 전한다.",
+      de:"Reine Frauengruppe der BYU. Engelhafte Harmonien für kraftvolle, inspirierende Musik.",
+      fr:"Groupe 100% féminin de la BYU. Des harmonies angéliques pour une musique puissante.",
+      it:"Gruppo tutto al femminile della BYU. Armonie angeliche per musica potente e ispiratrice.",
+    },
+    profile:{harmony:8,tempo:6,modern:8,size:4,energy:7,japanese:1,beatbox:4,upbeat:7,covers:9,gospel:7,jazz:1},
+    songs:[{name:"Amazing Grace",yt:"BYU Noteworthy Amazing Grace"},{name:"I Will Survive",yt:"BYU Noteworthy I Will Survive"},{name:"How Great Thou Art",yt:"BYU Noteworthy How Great"}]
+  },
+{
+    name:"The Acappella Company", origin:"🇺🇸 USA", tags:["Christian","Gospel","Inspirational"],
+    desc:{
+      ja:"キリスト教ア・カペラ界の重鎮。清らかな賛美歌から力強いゴスペルまで、声だけで心洗われるサウンドを届ける。",
+      en:"Pillars of Christian a cappella. Delivering soul-cleansing sounds from pure hymns to powerful gospel.",
+      zh:"基督教无伴奏合唱界的泰斗。从纯净赞美诗到充满力量的福音，用纯人声洗涤心灵。",
+      ko:"기독교 아카펠라계의 거장. 청아한 찬송가부터 파워풀한 가스펠까지, 목소리만으로 마음을 씻어주는 사운드.",
+      de:"Säulen des christlichen A-cappella. Von reinen Hymnen bis zu kraftvollem Gospel.",
+      fr:"Piliers de l'a cappella chrétien. Des hymnes purs aux gospels puissants.",
+      it:"Pilastri dell'a cappella cristiano. Da inni puri a potenti gospel.",
+    },
+    profile:{harmony:8,tempo:6,modern:4,size:9,energy:7,japanese:1,beatbox:2,upbeat:6,covers:2,gospel:10,jazz:3},
+    songs:[{name:"Rescue",yt:"Acappella Company Rescue"},{name:"God Bless The USA",yt:"Acappella Company God Bless"},{name:"Water From The Well",yt:"Acappella Company Water From The Well"}]
+  },
+  {
+    name:"Glad", origin:"🇺🇸 USA", tags:["Christian","Jazz","Pop"],
+    desc:{
+      ja:"1970年代から活動するクリスチャングループ。複雑なジャズ・アレンジと美しいコーラスワークが特徴。",
+      en:"Christian group active since the 1970s. Characterized by complex jazz arrangements and beautiful choruses.",
+      zh:"从70年代活跃至今的基督教团体。以复杂的爵士编曲与优美的和声演唱为特征。",
+      ko:"1970년대부터 활동한 크리스천 그룹. 복잡한 재즈 편곡과 아름다운 코러스 워크가 특징.",
+      de:"Christliche Gruppe aktiv seit den 70ern. Komplexe Jazz-Arrangements und schöne Chöre.",
+      fr:"Groupe chrétien actif depuis les années 70. Arrangements jazz complexes et beaux chœurs.",
+      it:"Gruppo cristiano attivo dagli anni '70. Complessi arrangiamenti jazz e bellissimi cori.",
+    },
+    profile:{harmony:8,tempo:5,modern:3,size:9,energy:5,japanese:1,beatbox:1,upbeat:5,covers:2,gospel:8,jazz:7},
+    songs:[{name:"Be Ye Glad",yt:"Glad Be Ye Glad"},{name:"A Mighty Fortress",yt:"Glad A Mighty Fortress"},{name:"Just As I Am",yt:"Glad Just As I Am"}]
+  },
+  {
+    name:"Vocal Six", origin:"🇸🇪 Sweden", tags:["Pop","Comedy","Swedish"],
+    desc:{
+      ja:"スウェーデンの男性6人組。エンターテインメント性と類まれなボーカルテクニックが高い次元で結実している。",
+      en:"Swedish male 6-piece. Highly entertaining performances combined with extraordinary vocal techniques.",
+      zh:"瑞典六人男团。娱乐性与非凡的人声技巧在高水准上达到了完美结合。",
+      ko:"스웨덴의 남성 6인조. 탁월한 보컬 테크닉에 뛰어난 엔터테인먼트성이 더해졌다.",
+      de:"Schwedisches Sextett. Äußerst unterhaltsame Auftritte kombiniert mit außergewöhnlicher Vokaltechnik.",
+      fr:"Sextette suédois. Performances très divertissantes combinées à une technique vocale extraordinaire.",
+      it:"Sestetto svedese. Esibizioni molto divertenti combinate con tecnica vocale straordinaria.",
+    },
+    profile:{harmony:7,tempo:7,modern:6,size:8,energy:8,japanese:1,beatbox:5,upbeat:8,covers:7,gospel:3,jazz:4},
+    songs:[{name:"Tom Jones Medley",yt:"Vocal Six Tom Jones"},{name:"Bohemian Rhapsody",yt:"Vocal Six Bohemian Rhapsody"},{name:"Stayin' Alive",yt:"Vocal Six Stayin Alive"}]
+  },
+  {
+    name:"Pust", origin:"🇳🇴 Norway", tags:["Folk","Jazz","Nordic"],
+    desc:{
+      ja:"ノルウェーの6人組。北欧の大自然を思わせる透明感あふれる歌声で、フォークとジャズを融合させる。",
+      en:"Norwegian 6-piece. Merging folk and jazz with crystal-clear voices reminiscent of Nordic nature.",
+      zh:"挪威六人组。以令人联想起北欧大自然的透明感歌声，完美融合民谣与爵士。",
+      ko:"노르웨이의 6인조. 북유럽 대자연을 연상시키는 투명한 목소리로 포크와 재즈를 융합한다.",
+      de:"Norwegisches Sextett. Folk und Jazz mit kristallklaren Stimmen, die an nordische Natur erinnern.",
+      fr:"Sextette norvégien. Folk et jazz avec des voix cristallines rappelant la nature nordique.",
+      it:"Sestetto norvegese. Folk e jazz con voci cristalline che ricordano la natura nordica.",
+    },
+    profile:{harmony:9,tempo:4,modern:5,size:8,energy:4,japanese:1,beatbox:2,upbeat:4,covers:3,gospel:1,jazz:8},
+    songs:[{name:"En reel halling",yt:"Pust En reel halling"},{name:"Gåte",yt:"Pust Gate"},{name:"Vuggesang",yt:"Pust Vuggesang"}]
+  },
+  {
+    name:"Kraja", origin:"🇸🇪 Sweden", tags:["Folk","Traditional","Female"],
+    desc:{
+      ja:"スウェーデンの女性4人組。伝統的な北欧民謡を、息を飲むほど美しく神秘的なハーモニーで歌い紡ぐ。",
+      en:"Swedish female quartet. Breathtaking and mystical harmonies singing traditional Nordic folk songs.",
+      zh:"瑞典女子四人组。以令人屏息的绝美神秘和声传唱传统的北欧民谣。",
+      ko:"스웨덴의 여성 4인조. 전통 북유럽 민요를 숨막히게 아름답고 신비로운 하모니로 노래한다.",
+      de:"Schwedisches Frauenquartett. Atemberaubende und mystische Harmonien nordischer Volkslieder.",
+      fr:"Quatuor féminin suédois. Harmonies mystiques et magnifiques chantant des chansons folkloriques.",
+      it:"Quartetto femminile svedese. Armonie mistiche e mozzafiato che cantano canzoni popolari.",
+    },
+    profile:{harmony:9,tempo:3,modern:2,size:9,energy:3,japanese:1,beatbox:0,upbeat:3,covers:1,gospel:1,jazz:1},
+    songs:[{name:"Sorgen och glädjen",yt:"Kraja Sorgen"},{name:"Den blomstertid nu kommer",yt:"Kraja Den blomstertid"},{name:"Uti vår hage",yt:"Kraja Uti var hage"}]
+  },
+  {
+    name:"Pinopela", origin:"🇵🇭 Philippines", tags:["Pop","Competition","Ovation"],
+    desc:{
+      ja:"フィリピンの混声グループ。国際大会でも上位に食い込む実力派で、厚みのあるコーラスと表現力に優れる。",
+      en:"Mixed group from the Philippines. Award-winning competitors known for rich choruses and expression.",
+      zh:"菲律宾混声组合。在国际比赛中名列前茅的实力派，以浑厚的和声和极佳的表现力脱颖而出。",
+      ko:"필리핀 혼성 그룹. 국제 대회에서도 상위권에 오르는 실력파로 두터운 코러스와 표현력이 뛰어나다.",
+      de:"Gemischte Gruppe aus den Philippinen. Bekannt für reiche Chöre und starken Ausdruck.",
+      fr:"Groupe mixte des Philippines. Célèbres pour leurs chœurs riches et leur grande expressivité.",
+      it:"Gruppo misto delle Filippine. Famosi per i cori ricchi e la grande espressività.",
+    },
+    profile:{harmony:7,tempo:7,modern:8,size:8,energy:8,japanese:1,beatbox:6,upbeat:8,covers:8,gospel:3,jazz:4},
+    songs:[{name:"Go the Distance",yt:"Pinopela Go the Distance"},{name:"Tadhana",yt:"Pinopela Tadhana"},{name:"Sino Ang Baliw",yt:"Pinopela Sino Ang Baliw"}]
+  },
+  {
+    name:"Y-Studs", origin:"🇺🇸 USA", tags:["Jewish","Pop","Collegiate Roots"],
+    desc:{
+      ja:"ニューヨークのイェシーヴァ大学発祥。ユダヤの伝統曲やポップスのパロディを本格的なアレンジで聴かせる。",
+      en:"Originating from Yeshiva University in NY. They perform Jewish traditional music and pop parodies with serious skill.",
+      zh:"源自纽约叶史瓦大学。用极具专业水准的编曲呈现犹太传统音乐及流行乐恶搞。",
+      ko:"뉴욕 예시바 대학 출신. 유대 전통 음악과 팝 패러디를 정통 아카펠라 편곡으로 들려준다.",
+      de:"Aus dem Yeshiva College NY. Jüdische Traditionsmusik und Pop-Parodien auf höchstem Niveau.",
+      fr:"Originaire de l'Université Yeshiva de NY. Musique traditionnelle juive et parodies pop.",
+      it:"Dalla Yeshiva University di NY. Musica tradizionale ebraica e parodie pop di alto livello.",
+    },
+    profile:{harmony:7,tempo:8,modern:8,size:6,energy:8,japanese:1,beatbox:6,upbeat:8,covers:9,gospel:2,jazz:2},
+    songs:[{name:"Evolution of Jewish Music",yt:"Y-Studs Evolution of Jewish Music"},{name:"Hashem Melech",yt:"Y-Studs Hashem Melech"},{name:"La La Passover",yt:"Y-Studs La La Passover"}]
+  },
+  {
+    name:"The Buzztones", origin:"🇬🇧 UK", tags:["Pop","Rock","Boyband"],
+    desc:{
+      ja:"イギリスのエンタメ系男性グループ。赤いスタジアムジャンパーがトレードマークで、熱量全開のライブが売り。",
+      en:"UK entertaining male group. Trademark red varsity jackets and high-energy live shows.",
+      zh:"英国娱乐型男子团体。身穿标志性红色棒球夹克，以火力全开的现场演出为卖点。",
+      ko:"영국의 엔터테인먼트 남성 그룹. 빨간 스타디움 점퍼가 트레이드마크이며 열기 가득한 라이브가 무기.",
+      de:"Unterhaltsame UK-Männergruppe. Rote College-Jacken und extrem energiegeladene Live-Shows.",
+      fr:"Groupe masculin britannique divertissant. Vestes rouges et spectacles live pleins d'énergie.",
+      it:"Gruppo maschile britannico molto divertente. Giacche rosse e spettacoli live pieni di energia.",
+    },
+    profile:{harmony:6,tempo:8,modern:8,size:6,energy:10,japanese:1,beatbox:7,upbeat:9,covers:9,gospel:1,jazz:2},
+    songs:[{name:"Get Lucky",yt:"Buzztones Get Lucky"},{name:"Uptown Funk",yt:"Buzztones Uptown Funk"},{name:"The Greatest Showman",yt:"Buzztones Greatest Showman"}]
+  },
+  {
+    name:"Semi-Toned", origin:"🇬🇧 UK", tags:["Collegiate","Pop","Award Winning"],
+    desc:{
+      ja:"エクセター大学の男性グループ。英米のコンテストで優勝を総なめにした、学生らしからぬ洗練された構成力。",
+      en:"Male group from University of Exeter. Swept contests in the UK and US with highly sophisticated arrangements.",
+      zh:"埃克塞特大学男生团。横扫英美阿卡贝拉大赛冠军，拥有超越学生水平的精妙编排。",
+      ko:"엑서터 대학의 남성 그룹. 영미권 대회를 휩쓸었으며 학생답지 않은 세련된 구성력을 보여준다.",
+      de:"Männergruppe der Exeter University. Gewann UK- und US-Wettbewerbe mit raffinierten Arrangements.",
+      fr:"Groupe masculin de l'Université d'Exeter. Vainqueurs de concours avec des arrangements sophistiqués.",
+      it:"Gruppo maschile dell'Università di Exeter. Vincitori di vari concorsi internazionali con grandi arrangiamenti.",
+    },
+    profile:{harmony:7,tempo:7,modern:8,size:5,energy:8,japanese:1,beatbox:6,upbeat:8,covers:9,gospel:1,jazz:3},
+    songs:[{name:"715 - CR∑∑KS",yt:"Semi-Toned Creeks"},{name:"Candyman",yt:"Semi-Toned Candyman"},{name:"Take Me To Church",yt:"Semi-Toned Take Me To Church"}]
+  },
+  {
+    name:"All the King's Men", origin:"🇬🇧 UK", tags:["Collegiate","Pop","London"],
+    desc:{
+      ja:"キングス・カレッジ・ロンドン発。スタイリッシュなパフォーマンスとドラマチックなアレンジでファンを魅了する。",
+      en:"From King's College London. Captivates fans with stylish performances and dramatic arrangements.",
+      zh:"伦敦国王学院的代表团。以时尚的舞台表现和充满戏剧张力的编曲深受粉丝喜爱。",
+      ko:"킹스 칼리지 런던 출신. 스타일리시한 퍼포먼스와 극적인 편곡으로 팬들을 매료시킨다.",
+      de:"Aus dem King's College London. Fesselt Fans mit stilvollen Auftritten und dramatischen Arrangements.",
+      fr:"Du King's College London. Captive les fans avec des performances élégantes.",
+      it:"Dal King's College London. Affascina i fan con performance eleganti e arrangiamenti drammatici.",
+    },
+    profile:{harmony:7,tempo:7,modern:8,size:5,energy:8,japanese:1,beatbox:6,upbeat:8,covers:9,gospel:1,jazz:2},
+    songs:[{name:"Toxic",yt:"All the Kings Men Toxic"},{name:"Thriller",yt:"All the Kings Men Thriller"},{name:"Hallelujah",yt:"All the Kings Men Hallelujah"}]
+  },
+  {
+    name:"The Alley Cats", origin:"🇺🇸 USA", tags:["Doo Wop","Comedy","Retro"],
+    desc:{
+      ja:"1987年に結成されたドゥーワップグループ。50年代の香りを色濃く残しつつ、コメディタッチで老若男女を楽しませる。",
+      en:"Doo-wop group formed in 1987. Keeping the 50s aroma alive with comedic touches that entertain all ages.",
+      zh:"成立于1987年的Doo Wop组合。保留了浓郁的50年代气息，并融入喜剧元素逗乐各年龄层观众。",
+      ko:"1987년 결성된 두왑 그룹. 50년대의 향수를 짙게 풍기며 코미디 요소로 남녀노소를 즐겁게 한다.",
+      de:"1987 gegründet. Doo-Wop der 50er Jahre mit Comedy-Einlagen, die Jung und Alt unterhalten.",
+      fr:"Créé en 1987. Du doo-wop des années 50 avec des touches d'humour.",
+      it:"Creato nel 1987. Doo-wop degli anni '50 con tocchi umoristici.",
+    },
+    profile:{harmony:6,tempo:7,modern:2,size:9,energy:8,japanese:1,beatbox:1,upbeat:9,covers:9,gospel:3,jazz:4},
+    songs:[{name:"Duke of Earl",yt:"Alley Cats Duke of Earl"},{name:"Book of Love",yt:"Alley Cats Book of Love"},{name:"Sh-Boom",yt:"Alley Cats Sh Boom"}]
+  },
+  {
+    name:"The Persuasions", origin:"🇺🇸 USA", tags:["R&B","Soul","Legendary"],
+    desc:{
+      ja:"「ア・カペラの王様」と呼ばれる伝説的R&Bグループ。1962年の結成以来、魂の底から絞り出すブルースやソウルを歌い続ける。",
+      en:"Legendary R&B group known as 'the Kings of A Cappella'. Singing deep soul and blues since 1962.",
+      zh:"被誉为“无伴奏合唱之王”的传奇R&B组合，自1962年起就用最深沉的灵魂乐感化世人。",
+      ko:"'아카펠라의 왕'으로 불리는 전설적인 R&B 그룹. 1962년 결성 이후 영혼을 울리는 블루스와 소울을 부른다.",
+      de:"Legendäre R&B-Gruppe, 'Könige des A-cappella'. Seit 1962 tiefer Soul und Blues.",
+      fr:"Groupe R&B légendaire, 'les Rois de l'a cappella'. Soul et blues profonds depuis 1962.",
+      it:"Leggendario gruppo R&B, 'i Re dell'a cappella'. Soul e blues profondi dal 1962.",
+    },
+    profile:{harmony:7,tempo:5,modern:2,size:9,energy:7,japanese:1,beatbox:1,upbeat:6,covers:5,gospel:8,jazz:4},
+    songs:[{name:"Under The Boardwalk",yt:"Persuasions Under The Boardwalk"},{name:"Good Times",yt:"Persuasions Good Times"},{name:"Papa Oom Mow Mow",yt:"Persuasions Papa Oom Mow Mow"}]
+  },
+  {
+    name:"Boyz II Men", origin:"🇺🇸 USA", tags:["R&B","90s","Iconic"],
+    desc:{
+      ja:"90年代R&Bを牽引したスーパーグループ。楽器なしで歌う「It's So Hard to Say Goodbye」などの完璧な和声は世界中を涙させた。",
+      en:"Supergroup behind 90s R&B. Their flawless a cappella harmonies on tracks like 'It's So Hard to Say Goodbye' moved the world.",
+      zh:"引领90年代R&B的超级天团。他们完美的无伴奏和声（如《It's So Hard to Say Goodbye》）曾让全世界落泪。",
+      ko:"90년대 R&B를 이끈 슈퍼 그룹. 'It's So Hard to Say Goodbye' 등 악기 없이 부르는 완벽한 화성으로 전 세계를 울렸다.",
+      de:"Supergruppe des 90er R&B. Ihre makellosen A-cappella-Harmonien haben die Welt bewegt.",
+      fr:"Super-groupe R&B des années 90. Leurs harmonies a cappella impeccables ont ému le monde.",
+      it:"Supergruppo R&B degli anni '90. Le loro impeccabili armonie a cappella hanno commosso il mondo.",
+    },
+    profile:{harmony:9,tempo:4,modern:5,size:9,energy:6,japanese:1,beatbox:1,upbeat:4,covers:3,gospel:7,jazz:4},
+    songs:[{name:"It's So Hard To Say Goodbye To Yesterday",yt:"Boyz II Men Hard to Say Goodbye"},{name:"In The Still Of The Night",yt:"Boyz II Men In The Still Of The Night"},{name:"Let It Snow",yt:"Boyz II Men Let It Snow"}]
+  },
+  {
+    name:"The Flying Pickets", origin:"🇬🇧 UK", tags:["80s","Pop","Pioneers"],
+    desc:{
+      ja:"1983年に「Only You」のア・カペラカバーで全英1位を獲得し、大ブームを巻き起こしたパイオニア的存在。",
+      en:"Pioneers who sparked an a cappella boom when their cover of 'Only You' hit UK #1 in 1983.",
+      zh:"1983年凭无伴奏翻唱的《Only You》勇夺全英冠军，是引发无伴奏合唱热潮的先驱。",
+      ko:"1983년 'Only You' 아카펠라 커버로 영국 1위를 차지하며 대유행을 일으킨 선구자적 존재.",
+      de:"Pioniere, deren A-cappella-Cover von 'Only You' 1983 auf Platz 1 in Großbritannien schoss.",
+      fr:"Pionniers dont la reprise a cappella de 'Only You' a été numéro 1 au Royaume-Uni en 1983.",
+      it:"Pionieri la cui cover a cappella di 'Only You' è arrivata al numero 1 nel Regno Unito nel 1983.",
+    },
+    profile:{harmony:6,tempo:6,modern:3,size:9,energy:5,japanese:1,beatbox:2,upbeat:6,covers:8,gospel:1,jazz:2},
+    songs:[{name:"Only You",yt:"Flying Pickets Only You"},{name:"Englishman In New York",yt:"Flying Pickets Englishman In New York"},{name:"When You're Young and in Love",yt:"Flying Pickets When You're Young"}]
+  },
+  {
+    name:"The Bobs", origin:"🇺🇸 USA", tags:["New Wave","Originals","Quirky"],
+    desc:{
+      ja:"80年代から活動。「ニューウェーブ・ア・カペラ」と称され、風変わりでシニカルなオリジナル曲と前衛的な和声が天才的。",
+      en:"Active since the 80s as 'New Wave A Cappella'. Genius avant-garde harmonies and quirky, cynical original songs.",
+      zh:"自80年代活跃的“新浪潮无伴奏合唱”。古怪且充满黑色幽默的原创歌曲与前卫和声堪称绝妙。",
+      ko:"80년대부터 활동. '뉴웨이브 아카펠라'로 불리며 엉뚱하고 냉소적인 오리지널 곡과 전위적인 화성이 천재적.",
+      de:"Seit den 80ern aktiv. Geniale, avantgardistische Harmonien und skurrile, zynische Originalsongs.",
+      fr:"Actifs depuis les années 80. Harmonies d'avant-garde géniales et chansons originales décalées.",
+      it:"Attivi dagli anni '80. Armonie d'avanguardia geniali e canzoni originali eccentriche.",
+    },
+    profile:{harmony:7,tempo:7,modern:4,size:9,energy:7,japanese:1,beatbox:2,upbeat:6,covers:2,gospel:1,jazz:4},
+    songs:[{name:"Helter Skelter",yt:"The Bobs Helter Skelter"},{name:"Art For Art's Sake",yt:"The Bobs Art For Arts Sake"},{name:"I Hate the Beach Boys",yt:"The Bobs I Hate the Beach Boys"}]
+  },
+  {
+    name:"Cosmos", origin:"🇱🇻 Latvia", tags:["Pop","Beatbox","Baltic"],
+    desc:{
+      ja:"ラトビアの6人組。クラシックやバルト三国の伝統から現代ポップスのビートボックスまで、信じられない音圧を叩き出す。",
+      en:"6-piece from Latvia. Delivering incredible sound pressure spanning from Baltic traditions to modern beatbox pop.",
+      zh:"拉脱维亚六人组。能够演奏从古典、波罗的海传统音乐到现代带Beatbox的流行乐，音压惊人。",
+      ko:"라트비아 6인조. 클래식과 발트해 전통부터 현대 팝 비트박스까지 상상 초월의 음압을 낸다.",
+      de:"Sextett aus Lettland. Unglaublicher Schalldruck von baltischen Traditionen bis hin zu modernem Pop.",
+      fr:"Sextette de Lettonie. Pression sonore incroyable allant des traditions baltes à la pop moderne.",
+      it:"Sestetto dalla Lettonia. Incredibile pressione sonora dalle tradizioni baltiche al pop moderno.",
+    },
+    profile:{harmony:8,tempo:7,modern:6,size:8,energy:8,japanese:1,beatbox:8,upbeat:7,covers:6,gospel:2,jazz:5},
+    songs:[{name:"Billionaire",yt:"Cosmos Billionaire"},{name:"You Can Leave Your Hat On",yt:"Cosmos Hat On"},{name:"I Hear Your Voice",yt:"Cosmos Hear Your Voice"}]
+  },
+  {
+    name:"Fool Moon", origin:"🇭🇺 Hungary", tags:["Pop","A Cappella","Hungarian"],
+    desc:{
+      ja:"ハンガリーの著名なポップ・ア・カペラバンド。ヨーロッパ中のコンテストで優勝し、母国語や英語のスタイリッシュなポップスを歌う。",
+      en:"Prominent pop a cappella band from Hungary. European contest winners singing stylish pop in Hungarian and English.",
+      zh:"匈牙利著名的流行无伴奏合唱团。在欧洲各项比赛中夺冠，演唱风格时髦的母语及英语流行乐。",
+      ko:"헝가리의 저명한 팝 아카펠라 밴드. 유럽 전역의 대회를 우승하며 세련된 모국어와 영어 팝을 부른다.",
+      de:"Bekannte Pop-A-cappella-Band aus Ungarn. Singen stilvollen Pop auf Ungarisch und Englisch.",
+      fr:"Groupe pop a cappella de Hongrie. Chantent de la pop élégante en hongrois et anglais.",
+      it:"Famoso gruppo pop a cappella dell'Ungheria. Cantano pop elegante in ungherese e inglese.",
+    },
+    profile:{harmony:7,tempo:7,modern:7,size:9,energy:7,japanese:1,beatbox:6,upbeat:8,covers:8,gospel:1,jazz:3},
+    songs:[{name:"Kettesben jo",yt:"Fool Moon Kettesben jo"},{name:"Hello Tourist",yt:"Fool Moon Hello Tourist"},{name:"Vip",yt:"Fool Moon Vip"}]
+  },
+  {
+    name:"The Blanks", origin:"🇺🇸 USA", tags:["Comedy","TV","Barbershop"],
+    desc:{
+      ja:"人気ドラマ『Scrubs』から生まれたコミック・バーバーショップ・カルテット。テッドの悲哀な歌声とそのギャップが笑いを誘う。",
+      en:"Comic barbershop quartet from the hit TV show 'Scrubs'. Ted's mournful voice paired with their antics brings constant laughs.",
+      zh:"从热门美剧《实习医生风云》中走出的搞笑理发师四重唱。泰德的凄凉歌声与其实际搞笑风格反差极大。",
+      ko:"인기 드라마 'Scrubs'에서 탄생한 코믹 바버샵 콰르텟. 테드의 애잔한 목소리와 코믹함의 갭이 웃음을 자아낸다.",
+      de:"Komisches Barbershop-Quartett aus der Serie 'Scrubs'. Sorgen mit verrückten Einlagen für Lacher.",
+      fr:"Duo comique issu de la série 'Scrubs'. Des voix tristes mélangées à leurs blagues font rire.",
+      it:"Quartetto comico dalla serie 'Scrubs'. Portano risate con buffonate e bellissime voci baritonali.",
+    },
+    profile:{harmony:6,tempo:6,modern:3,size:9,energy:6,japanese:1,beatbox:0,upbeat:7,covers:8,gospel:1,jazz:2},
+    songs:[{name:"Over the Rainbow",yt:"The Blanks Over the Rainbow"},{name:"Superman",yt:"The Blanks Superman"},{name:"Charles in Charge",yt:"The Blanks Charles in Charge"}]
+  },
+  {
+    name:"The Chordettes", origin:"🇺🇸 USA", tags:["Classic","50s","Female"],
+    desc:{
+      ja:"「Mr. Sandman」の大ヒットで知られる1940～50年代の女性4人組。古き良きアメリカの完璧なクローズ・ハーモニー。",
+      en:"1940s-50s female quartet famous for the massive hit 'Mr. Sandman'. Flawless, classic American close harmony.",
+      zh:"以金曲《Mr. Sandman》名垂青史的1940-50年代女子四人组。展现了老派美国古典音乐中完美的紧密和声。",
+      ko:"'Mr. Sandman'의 대히트로 알려진 1940~50년대 여성 4인조. 옛 미국의 완벽한 클로즈 하모니.",
+      de:"Frauenquartett der 40er-50er, berühmt für 'Mr. Sandman'. Makellose klassische Close-Harmony.",
+      fr:"Quatuor féminin des années 40-50, célèbre pour 'Mr. Sandman'. Harmonie classique et impeccable.",
+      it:"Quartetto femminile degli anni '40-'50 famoso per 'Mr. Sandman'. Armonia classica e impeccabile.",
+    },
+    profile:{harmony:8,tempo:5,modern:1,size:9,energy:4,japanese:1,beatbox:0,upbeat:6,covers:2,gospel:1,jazz:5},
+    songs:[{name:"Mr. Sandman",yt:"Chordettes Mr Sandman"},{name:"Lollipop",yt:"Chordettes Lollipop"},{name:"Eddie My Love",yt:"Chordettes Eddie My Love"}]
+  },
+  {
+    name:"Sweet Honey in the Rock", origin:"🇺🇸 USA", tags:["Roots","Gospel","Activism"],
+    desc:{
+      ja:"アフリカ系アメリカ人の女性たちによるパワフルなルーツ音楽。ゴスペルやブルースを通じて社会的メッセージを歌い上げる。",
+      en:"Powerful roots music by African-American women. Singing social messages through gospel and blues.",
+      zh:"由非裔美国女性演唱的激昂根源音乐。通过福音和蓝调音乐传达强烈的社会信息。",
+      ko:"아프리카계 미국인 여성들의 파워풀한 루츠 음악. 가스펠과 블루스로 사회적 메시지를 노래한다.",
+      de:"Kraftvolle Roots-Musik von afroamerikanischen Frauen. Singen soziale Botschaften durch Gospel und Blues.",
+      fr:"Musique puissante par des femmes afro-américaines. Messages sociaux via le gospel et le blues.",
+      it:"Musica potente di donne afroamericane. Cantano messaggi sociali attraverso gospel e blues.",
+    },
+    profile:{harmony:7,tempo:5,modern:2,size:8,energy:6,japanese:1,beatbox:1,upbeat:4,covers:3,gospel:10,jazz:3},
+    songs:[{name:"Wade In The Water",yt:"Sweet Honey Wade In The Water"},{name:"Ella's Song",yt:"Sweet Honey Ellas Song"},{name:"We Are",yt:"Sweet Honey We Are"}]
+  },
+  {
+    name:"b vocal", origin:"🇪🇸 Spain", tags:["Comedy","Pop","Spanish"],
+    desc:{
+      ja:"スペイン発の5人組。凄まじい声量と陽気なラテンのノリ、そして爆笑必至のシアトリカルなステージで世界を魅了する。",
+      en:"5-piece from Spain. Captivating the world with immense vocal power, cheerful Latin vibes, and hilarious theatrical stages.",
+      zh:"西班牙的五人连队。以其惊人的声量、欢乐的拉丁风情以及必引爆笑的舞台戏剧感风靡全球。",
+      ko:"스페인의 5인조. 엄청난 성량과 유쾌한 라틴 바이브, 그리고 폭소 만발의 연극적 무대로 세계를 매료시킨다.",
+      de:"Quintett aus Spanien. Bezaubert die Welt mit enormer Stimmgewalt, fröhlichen Latin-Vibes und Comedy.",
+      fr:"Quintette d'Espagne. Captivant le monde avec leur puissance vocale et leurs scènes théâtrales hilarantes.",
+      it:"Quintetto dalla Spagna. Affascina il mondo con potenza vocale e palchi teatrali esilaranti.",
+    },
+    profile:{harmony:8,tempo:7,modern:7,size:8,energy:9,japanese:1,beatbox:6,upbeat:9,covers:7,gospel:1,jazz:3},
+    songs:[{name:"Vocal Loco",yt:"b vocal Vocal Loco"},{name:"Bohemian Rhapsody",yt:"b vocal Bohemian Rhapsody"},{name:"A Cappella History",yt:"b vocal A Cappella History"}]
   }
-  screens[name].classList.add('fade-in');
-}
-
-// ── Progress ───────────────────────────────────────────────────────────────
-function updateProgress(n) {
-  $('progressWrap').style.display = 'block';
-  const pct = Math.round((n / 10) * 100);
-  $('progressFill').style.width = pct + '%';
-  $('progressText').textContent = `質問 ${Math.min(n, 10)} / 10`;
-  $('progressPct').textContent = pct + '%';
-}
-
-// ── Pips ──────────────────────────────────────────────────────────────────
-function buildPips() {
-  const row = $('pipRow');
-  row.innerHTML = '';
-  for (let i = 1; i <= 10; i++) {
-    const d = document.createElement('div');
-    d.className = 'pip';
-    d.dataset.val = i;
-    row.appendChild(d);
-  }
-}
-
-function updatePips(val) {
-  document.querySelectorAll('.pip').forEach(p => {
-    p.classList.toggle('active', parseInt(p.dataset.val) <= val);
-  });
-}
-
-// ── Slider ────────────────────────────────────────────────────────────────
-$('slider').addEventListener('input', e => {
-  const v = parseInt(e.target.value);
-  $('sliderScore').textContent = v;
-  updatePips(v);
-  const hue = 220 + (v - 1) * 12; // blue → purple → pink
-  $('sliderScore').style.color = `hsl(${hue},80%,70%)`;
-});
-
-// ── Toast ─────────────────────────────────────────────────────────────────
-function showToast(msg) {
-  const t = $('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 4000);
-}
-
-// ── API helpers ───────────────────────────────────────────────────────────
-async function fetchQuestion(questionNumber, history) {
-  const res = await fetch('/api/next-question', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ questionNumber, history })
-  });
-  if (!res.ok) throw new Error((await res.json()).error || 'エラーが発生しました');
-  return res.json();
-}
-
-async function fetchRecommendations(history) {
-  const res = await fetch('/api/recommend', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ history })
-  });
-  if (!res.ok) throw new Error((await res.json()).error || 'エラーが発生しました');
-  return res.json();
-}
-
-// ── Show question ──────────────────────────────────────────────────────────
-function displayQuestion(data, n) {
-  state.currentQuestion = data;
-  $('qNumber').textContent = `質問 ${n} / 10`;
-  $('qText').textContent = data.question;
-  $('label1').textContent = `1: ${data.label1}`;
-  $('label10').textContent = `10: ${data.label10}`;
-  $('slider').value = 5;
-  $('sliderScore').textContent = '5';
-  $('sliderScore').style.color = '';
-  buildPips();
-  updatePips(5);
-  showScreen('question');
-  updateProgress(n);
-}
-
-// ── Show results ───────────────────────────────────────────────────────────
-function displayResults(data) {
-  $('resultsSummary').textContent = data.summary;
-
-  const gg = $('groupGrid');
-  gg.innerHTML = '';
-  (data.groups || []).forEach(g => {
-    const tags = (g.style || '').split('、').filter(Boolean).map(t =>
-      `<span class="tag">${t.trim()}</span>`
-    ).join('');
-    const matchItems = (g.match_points || []).map(m =>
-      `<div class="match-item">${m}</div>`
-    ).join('');
-    gg.innerHTML += `
-      <div class="group-card fade-in">
-        <div class="group-header">
-          <span class="group-name">${g.name}</span>
-          <span class="group-origin">${g.origin}</span>
-        </div>
-        <div class="group-style">${tags}</div>
-        <div class="group-desc">${g.description}</div>
-        <div class="starter-song">
-          <span>🎵</span>
-          <div><strong>まず聴くべき曲：</strong>${g.starter_song}</div>
-        </div>
-        <div class="match-list">${matchItems}</div>
-      </div>`;
-  });
-
-  const sl = $('songList');
-  sl.innerHTML = '';
-  (data.songs || []).forEach((s, i) => {
-    sl.innerHTML += `
-      <div class="song-card fade-in">
-        <div class="song-num">${i + 1}</div>
-        <div>
-          <div class="song-title">「${s.title}」</div>
-          <div class="song-group">${s.group}</div>
-          <div class="song-why">${s.why}</div>
-        </div>
-      </div>`;
-  });
-
-  showScreen('results');
-  $('progressWrap').style.display = 'none';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ── Flow ───────────────────────────────────────────────────────────────────
-$('startBtn').addEventListener('click', async () => {
-  state.history = [];
-  state.questionNumber = 1;
-  showScreen('loading');
-  $('progressWrap').style.display = 'block';
-  $('loadingMsg').textContent = 'AIが最初の質問を考えています…';
-  try {
-    const q = await fetchQuestion(1, []);
-    displayQuestion(q, 1);
-  } catch (err) {
-    showScreen('welcome');
-    $('progressWrap').style.display = 'none';
-    showToast('⚠ ' + err.message);
-  }
-});
-
-$('nextBtn').addEventListener('click', async () => {
-  const answer = parseInt($('slider').value);
-  const q = state.currentQuestion;
-
-  // Save answer
-  state.history.push({
-    question: q.question,
-    label1: q.label1,
-    label10: q.label10,
-    answer
-  });
-
-  const next = state.questionNumber + 1;
-  state.questionNumber = next;
-
-  if (next > 10) {
-    // All done — get recommendations
-    showScreen('loading');
-    $('loadingMsg').textContent = 'AIがあなたの好みを分析中…\nしばらくお待ちください（30秒ほどかかる場合があります）';
-    updateProgress(10);
-    try {
-      const rec = await fetchRecommendations(state.history);
-      displayResults(rec);
-    } catch (err) {
-      showScreen('question');
-      showToast('⚠ ' + err.message);
+];
+ 
+// ─────────────────────────────────────────────
+// APP STATE
+// ─────────────────────────────────────────────
+let lang='ja', questions=[], answers=[], current=0;
+ 
+// ─────────────────────────────────────────────
+// STARS
+// ─────────────────────────────────────────────
+(function initStars(){
+  const c=document.getElementById('stars');
+  const ctx=c.getContext('2d');
+  c.width=window.innerWidth; c.height=window.innerHeight;
+  window.addEventListener('resize',()=>{c.width=window.innerWidth;c.height=window.innerHeight;drawStars()});
+  function drawStars(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(let i=0;i<200;i++){
+      const x=Math.random()*c.width, y=Math.random()*c.height;
+      const r=Math.random()*1.5;
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.7+0.1})`;
+      ctx.fill();
     }
+  }
+  drawStars();
+})();
+ 
+// ─────────────────────────────────────────────
+// FLOW
+// ─────────────────────────────────────────────
+let askedIds = [];
+const relatedDims = {
+  harmony: ['jazz', 'size', 'gospel'],
+  tempo: ['energy', 'upbeat', 'beatbox'],
+  modern: ['beatbox', 'upbeat', 'covers'],
+  size: ['harmony', 'gospel'],
+  energy: ['tempo', 'beatbox', 'modern'],
+  japanese: ['modern', 'covers'],
+  beatbox: ['modern', 'energy'],
+  upbeat: ['tempo', 'energy'],
+  covers: ['modern', 'japanese'],
+  gospel: ['harmony', 'size', 'energy'],
+  jazz: ['harmony', 'size']
+};
+
+function selectLang(l){
+  lang=l;
+  answers = [];
+  askedIds = [];
+  questions = [];
+  
+  let firstQ = QPOOL[Math.floor(Math.random() * QPOOL.length)];
+  questions.push(firstQ);
+  askedIds.push(firstQ.id || firstQ.ja);
+  
+  current=0;
+  show('quiz-screen');
+  renderQ();
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function selectOpt(val) {
+  answers[current] = parseInt(val);
+  
+  document.querySelectorAll('input[name="q-option"]').forEach(r => {
+    if(parseInt(r.value) === answers[current]){
+       r.checked = true;
+       r.parentElement.classList.add('selected');
+    } else {
+       r.checked = false;
+       r.parentElement.classList.remove('selected');
+    }
+  });
+
+  document.getElementById('btn-next').disabled = false;
+}
+
+function renderQ(){
+  const t=T[lang];
+  const q=questions[current];
+  const n=current+1;
+  document.getElementById('prog-text').textContent=`${n} / 10`;
+  document.getElementById('prog-fill').style.width=`${n*10}%`;
+  document.getElementById('q-number').textContent=`Q ${n}`;
+  document.getElementById('q-text').textContent=q[lang]||q['en'];
+  
+  if (t.opts) {
+      document.getElementById('opt-1').textContent = t.opts[0];
+      document.getElementById('opt-3').textContent = t.opts[1];
+      document.getElementById('opt-5').textContent = t.opts[2];
+      document.getElementById('opt-8').textContent = t.opts[3];
+      document.getElementById('opt-10').textContent = t.opts[4];
+  }
+  
+  let val = answers[current];
+  document.querySelectorAll('input[name="q-option"]').forEach(r => {
+    if(val !== undefined && parseInt(r.value) === val){
+       r.checked = true;
+       r.parentElement.classList.add('selected');
+    } else {
+       r.checked = false;
+       r.parentElement.classList.remove('selected');
+    }
+  });
+  
+  document.getElementById('btn-next').disabled = (val === undefined);
+  document.getElementById('lbl-prev').textContent=t.prev;
+  document.getElementById('btn-prev').disabled=current===0;
+  
+  const nextBtn=document.getElementById('btn-next');
+  const nextLbl=document.getElementById('lbl-next');
+  if(current===9){
+    nextLbl.textContent=t.seeResult;
+    nextBtn.textContent=t.seeResult;
   } else {
-    // Next question
-    showScreen('loading');
-    $('loadingMsg').textContent = `AIが質問 ${next} を考えています…`;
-    updateProgress(next);
-    try {
-      const nextQ = await fetchQuestion(next, state.history);
-      displayQuestion(nextQ, next);
-    } catch (err) {
-      state.questionNumber--;
-      state.history.pop();
-      displayQuestion(q, state.questionNumber);
-      showToast('⚠ ' + err.message);
-    }
+    nextBtn.innerHTML=`<span id="lbl-next">${t.next}</span> →`;
   }
-});
+}
 
-$('restartBtn').addEventListener('click', () => {
-  state.history = [];
-  state.questionNumber = 0;
-  state.currentQuestion = null;
-  $('progressWrap').style.display = 'none';
-  showScreen('welcome');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+function prevQ(){
+  if(current>0){current--;renderQ();}
+}
 
-// ── Init ──────────────────────────────────────────────────────────────────
-showScreen('welcome');
+function nextQ(){
+  if(answers[current] === undefined) return;
+  if(current<9){
+     if(current === questions.length - 1) {
+        let val = answers[current];
+        let q = questions[current];
+        let targetDim = null;
+        if(val >= 8) {
+           let rels = [q.dim].concat(relatedDims[q.dim] || []);
+           targetDim = rels[Math.floor(Math.random() * rels.length)];
+        } else if (val <= 3) {
+           targetDim = null;
+        }
+        
+        let unasked = QPOOL.filter(x => !askedIds.includes(x.id || x.ja));
+        let pool = targetDim ? unasked.filter(x => x.dim === targetDim) : [];
+        if(pool.length === 0) pool = unasked;
+        
+        let next = pool[Math.floor(Math.random() * pool.length)];
+        questions.push(next);
+        askedIds.push(next.id || next.ja);
+     }
+     current++;
+     renderQ();
+  }
+  else showResults();
+}
+
+// ─────────────────────────────────────────────
+// SCORING
+// ─────────────────────────────────────────────
+function computeScores(){
+  // Aggregate user answers per dimension
+  const dimSums={}, dimCounts={};
+  questions.forEach((q,i)=>{
+    const d=q.dim;
+    dimSums[d]=(dimSums[d]||0)+answers[i];
+    dimCounts[d]=(dimCounts[d]||0)+1;
+  });
+  const userProfile={};
+  for(const d in dimSums) userProfile[d]=dimSums[d]/dimCounts[d];
+ 
+  // Score each group
+  const dims=['harmony','tempo','modern','size','energy','japanese','beatbox','upbeat','covers','gospel','jazz'];
+  return GROUPS.map(g=>{
+    let totalDiff=0, count=0;
+    dims.forEach(d=>{
+      if(userProfile[d]!==undefined){
+        // size is reversed: user answer 10=small, group 10=small (consistent)
+        totalDiff+=Math.abs(userProfile[d]-g.profile[d]);
+        count++;
+      }
+    });
+    const similarity= count>0 ? 1-(totalDiff/(9*count)) : 0;
+    return {group:g, score:Math.round(similarity*100)};
+  }).sort((a,b)=>b.score-a.score).slice(0,5);
+}
+ 
+function showResults(){
+  const t=T[lang];
+  document.getElementById('analyzing-text').textContent=t.analyzing;
+  document.getElementById('analyzing').classList.add('show');
+  setTimeout(()=>{
+    document.getElementById('analyzing').classList.remove('show');
+    const top5=computeScores();
+    buildResultCards(top5);
+    show('result-screen');
+  },1800);
+}
+ 
+function buildResultCards(top5){
+  const t=T[lang];
+  document.getElementById('result-title').textContent=t.resultTitle;
+  document.getElementById('result-sub').textContent=t.resultSub;
+  document.getElementById('btn-restart').textContent=t.restart;
+  const container=document.getElementById('result-cards');
+  container.innerHTML='';
+  const rankClass=['rank-1','rank-2','rank-3','rank-other','rank-other'];
+  top5.forEach((item,idx)=>{
+    const g=item.group;
+    const rankLabel=t.ranks[idx];
+    const card=document.createElement('div');
+    card.className=`group-card ${rankClass[idx]}`;
+    const desc=g.desc[lang]||g.desc['en'];
+    const songs=g.songs.map(s=>`
+      <div class="song-row">
+        <span class="song-name">♪ ${s.name}</span>
+        <a class="yt-btn" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.yt)}" target="_blank" rel="noopener">
+          ▶ ${t.yt}
+        </a>
+      </div>`).join('');
+    const tags=g.tags.map(tg=>`<span class="group-tag">${tg}</span>`).join('');
+    card.innerHTML=`
+      <div class="group-top">
+        <div class="rank-badge">${rankLabel}</div>
+        <div class="group-info">
+          <div class="group-name">${g.name}</div>
+          <div class="group-meta">
+            <span>${t.origin}: ${g.origin}</span>
+            ${tags}
+          </div>
+          <div class="group-desc">${desc}</div>
+        </div>
+      </div>
+      <div class="match-bar-wrap">
+        <span class="match-label">${t.match}</span>
+        <div class="match-bar"><div class="match-fill" style="width:0%" data-pct="${item.score}%"></div></div>
+        <span class="match-pct">${item.score}%</span>
+      </div>
+      <div class="songs-section">
+        <div class="songs-title">${t.songs}</div>
+        <div class="songs-list">${songs}</div>
+      </div>`;
+    container.appendChild(card);
+  });
+  // Animate match bars after paint
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      document.querySelectorAll('.match-fill').forEach(el=>{
+        el.style.width=el.dataset.pct;
+      });
+    });
+  });
+}
+ 
+function restart(){
+  show('lang-screen');
+}
 </script>
 </body>
 </html>
+ 
