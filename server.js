@@ -1,13 +1,13 @@
 require('dotenv').config();
 const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const SYSTEM_INSTRUCTION = `You are an a cappella music discovery expert with deep knowledge of vocal groups worldwide.
 Your role is to ask targeted questions (rated 1–10 by the user) to understand their music preferences,
@@ -53,13 +53,12 @@ Return ONLY this JSON (no markdown, no explanation):
 }`;
 
   try {
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      systemInstruction: SYSTEM_INSTRUCTION
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: { systemInstruction: SYSTEM_INSTRUCTION }
     });
-
-    const result = await model.generateContent(prompt);
-    const raw = result.response.text();
+    const raw = result.text;
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
     const json = JSON.parse(cleaned);
     res.json(json);
@@ -114,13 +113,12 @@ Return ONLY this JSON (no markdown, no explanation):
 Recommend exactly 4 groups and 4 songs. Prioritize specificity and genuine fit over variety.`;
 
   try {
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      systemInstruction: SYSTEM_INSTRUCTION
+    const result = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: prompt,
+      config: { systemInstruction: SYSTEM_INSTRUCTION }
     });
-
-    const result = await model.generateContent(prompt);
-    const raw = result.response.text();
+    const raw = result.text;
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
     const json = JSON.parse(cleaned);
     res.json(json);
